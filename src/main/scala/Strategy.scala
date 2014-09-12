@@ -1,7 +1,4 @@
-import model.Game
-import model.Hockeyist
-import model.Move
-import model.World
+import model.{Game, Hockeyist, Move, World}
 
 /**
  * Стратегия --- интерфейс, содержащий описание методов искусственного интеллекта хоккеиста.

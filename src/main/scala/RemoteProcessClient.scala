@@ -5,19 +5,25 @@ import java.nio.ByteOrder
 
 import model.{ActionType, Move, PlayerContext, Game, World, Player, HockeyistType, HockeyistState, Hockeyist, Puck}
 
+import scala.annotation.{tailrec, switch}
+
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
+
   import RemoteProcessClient._
 
-  private val socket = new Socket(host, port)
-  socket.setSendBufferSize(BUFFER_SIZE_BYTES)
-  socket.setReceiveBufferSize(BUFFER_SIZE_BYTES)
-  socket.setTcpNoDelay(true)
+  private val (socket, inputStream, outputStream) = {
+    val socket = {
+      val skt = new Socket(host, port)
+      skt.setSendBufferSize(BufferSizeBytes)
+      skt.setReceiveBufferSize(BufferSizeBytes)
+      skt.setTcpNoDelay(true)
+      skt
+    }
+    (socket, socket.getInputStream, socket.getOutputStream)
+  }
+  private val outputStreamBuffer = new ByteArrayOutputStream(BufferSizeBytes)
 
-  private val inputStream = socket.getInputStream
-  private val outputStream = socket.getOutputStream
-  private val outputStreamBuffer = new ByteArrayOutputStream(BUFFER_SIZE_BYTES)
-
-  def writeToken(token: String) {
+  def writeToken(token: String): Unit = {
     writeEnum(MessageType.AuthenticationToken, messageTypeToByte)
     writeString(token)
     flush()
@@ -28,7 +34,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     readInt()
   }
 
-  def writeProtocolVersion() {
+  def writeProtocolVersion(): Unit = {
     writeEnum(MessageType.ProtocolVersion, messageTypeToByte)
     writeInt(1)
     flush()
@@ -66,7 +72,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
-  def writeMoves(moves: List[Move]) {
+  def writeMoves(moves: List[Move]): Unit = {
     writeEnum(MessageType.Moves, messageTypeToByte)
 
     if (moves.isEmpty) {
@@ -92,9 +98,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     flush()
   }
 
-  def close() {
-    socket.close()
-  }
+  def close(): Unit = socket.close()
 
   private def readWorld(): Option[World] = {
     if (readBoolean())
@@ -105,25 +109,21 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     else None
   }
 
-  private def readPlayers(): List[Player] = {
+  private def readPlayers(): Vector[Player] = {
     val playerCount: Int = readInt()
 
-    if (playerCount < 0) List.empty
-    else {
-      List.range(0, playerCount).map(_ =>
-        if (readBoolean()) Some(new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
-          readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-          readBoolean(), readBoolean()))
-        else None
-      ).flatten
-    }
+    Vector.fill(playerCount) {
+      if (readBoolean()) Some(new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readBoolean(), readBoolean()))
+      else None
+    }.flatten
   }
 
-  private def readHockeyists(): List[Option[Hockeyist]] = {
+  private def readHockeyists(): Vector[Option[Hockeyist]] = {
     val hockeyistCount: Int = readInt()
 
-    if (hockeyistCount < 0) List.empty
-    else List.range(0, hockeyistCount).map(_ => readHockeyist())
+    Vector.fill(hockeyistCount) { readHockeyist() }
   }
 
   private def readHockeyist(): Option[Hockeyist] = {
@@ -143,7 +143,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def readEnum[E](fromByte: Byte => E): E = fromByte(readBytes(1)(0))
 
-  private def writeEnum[E](value: E, toByte: E => Byte) = writeBytes(Array(toByte(value)))
+  private def writeEnum[E](value: E, toByte: E => Byte): Unit = writeBytes(Array(toByte(value)))
 
   private def readString(): Option[String] = {
     try {
@@ -151,20 +151,18 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
       if (length == -1) None
       else Some(new String(readBytes(length), "UTF-8"))
-    }
-    catch {
+    } catch {
       case e: UnsupportedEncodingException =>
         throw new IllegalArgumentException("UTF-8 is unsupported.", e)
     }
   }
 
-  private def writeString(value: String) {
+  private def writeString(value: String): Unit = {
     try {
       val bytes = value.getBytes("UTF-8")
       writeInt(bytes.length)
       writeBytes(bytes)
-    }
-    catch {
+    } catch {
       case e: UnsupportedEncodingException =>
         throw new IllegalArgumentException("UTF-8 is unsupported.", e)
     }
@@ -177,49 +175,56 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     bytes.map(0 != _)
   }
 
-  private def writeBoolean(value: Boolean) {
+  private def writeBoolean(value: Boolean): Unit = {
     writeBytes(Array[Byte](if (value) 1.asInstanceOf[Byte] else 0.asInstanceOf[Byte]))
   }
 
   private def readInt(): Int = {
-    ByteBuffer.wrap(readBytes(INTEGER_SIZE_BYTES)).order(PROTOCOL_BYTE_ORDER).getInt
+    ByteBuffer.wrap(readBytes(IntegerSizeBytes)).order(ProtocolByteOrder).getInt
   }
 
-  private def writeInt(value: Int) {
-    writeBytes(ByteBuffer.allocate(INTEGER_SIZE_BYTES).order(PROTOCOL_BYTE_ORDER).putInt(value).array)
+  private def writeInt(value: Int): Unit = {
+    writeBytes(ByteBuffer.allocate(IntegerSizeBytes).order(ProtocolByteOrder).putInt(value).array)
   }
 
   private def readLong(): Long = {
-    ByteBuffer.wrap(readBytes(LONG_SIZE_BYTES)).order(PROTOCOL_BYTE_ORDER).getLong
+    ByteBuffer.wrap(readBytes(LongSizeBytes)).order(ProtocolByteOrder).getLong
   }
 
-  private def writeLong(value: Long) {
-    writeBytes(ByteBuffer.allocate(LONG_SIZE_BYTES).order(PROTOCOL_BYTE_ORDER).putLong(value).array)
+  private def writeLong(value: Long): Unit = {
+    writeBytes(ByteBuffer.allocate(LongSizeBytes).order(ProtocolByteOrder).putLong(value).array)
   }
 
   private def readDouble(): Double = {
     java.lang.Double.longBitsToDouble(readLong())
   }
 
-  private def writeDouble(value: Double) {
+  private def writeDouble(value: Double): Unit = {
     writeLong(java.lang.Double.doubleToLongBits(value))
   }
-
+  
   private def readBytes(byteCount: Int): Array[Byte] = {
-    val bytes = Stream.continually(inputStream.read).takeWhile(-1 != _).take(byteCount).map(_.toByte).toArray
-
-    if (bytes.length != byteCount) {
-      throw new IOException(s"Can't read $byteCount bytes from input stream.")
+    def result(bytes: Array[Byte], offset: Int) = {
+      if (offset == byteCount) bytes
+      else throw new IOException(s"Can't read $byteCount bytes from input stream.")
     }
 
-    bytes
+    @tailrec
+    def rb(offset: Int = 0, bytes: Array[Byte] = new Array[Byte](byteCount)): Array[Byte] = {
+      if (offset < byteCount) {
+        val readByteCount = inputStream.read(bytes, offset, byteCount - offset)
+        if (readByteCount != -1) rb(offset + readByteCount)
+        else result(bytes, offset)
+      } else result(bytes, offset)
+    }
+    rb()
   }
 
-  private def writeBytes(bytes: Array[Byte]) {
+  private def writeBytes(bytes: Array[Byte]): Unit = {
     outputStreamBuffer.write(bytes)
   }
 
-  private def flush() {
+  private def flush(): Unit = {
     outputStream.write(outputStreamBuffer.toByteArray)
     outputStreamBuffer.reset()
     outputStream.flush()
@@ -235,10 +240,10 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 }
 
 object RemoteProcessClient{
-  val BUFFER_SIZE_BYTES: Int = 1 << 20
-  val PROTOCOL_BYTE_ORDER: ByteOrder = ByteOrder.LITTLE_ENDIAN
-  val INTEGER_SIZE_BYTES: Int = Integer.SIZE / java.lang.Byte.SIZE
-  val LONG_SIZE_BYTES: Int = java.lang.Long.SIZE / java.lang.Byte.SIZE
+  private val BufferSizeBytes: Int = 1 << 20
+  private val ProtocolByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN
+  private val IntegerSizeBytes: Int = Integer.SIZE / java.lang.Byte.SIZE
+  private val LongSizeBytes: Int = java.lang.Long.SIZE / java.lang.Byte.SIZE
 
   sealed trait MessageType
 
@@ -268,7 +273,7 @@ object RemoteProcessClient{
     case _                   => -1
   }
 
-  def messageTypeFromByte(value: Byte): MessageType = value match {
+  def messageTypeFromByte(value: Byte): MessageType = (value: @switch) match {
     case 0 => Unknown
     case 1 => GameOver
     case 2 => AuthenticationToken
@@ -282,7 +287,7 @@ object RemoteProcessClient{
 
   import HockeyistType._
 
-  private def hockeyistTypeFromByte(value: Byte): HockeyistType = value match {
+  private def hockeyistTypeFromByte(value: Byte): HockeyistType = (value: @switch) match {
     case 0 => Goalie
     case 1 => Versatile
     case 2 => Forward
@@ -293,7 +298,7 @@ object RemoteProcessClient{
 
   import HockeyistState._
 
-  private def hockeyistStateFromByte(value: Byte): HockeyistState = value match {
+  private def hockeyistStateFromByte(value: Byte): HockeyistState = (value: @switch) match {
     case 0 => Active
     case 1 => Swinging
     case 2 => KnockedDown
@@ -303,7 +308,7 @@ object RemoteProcessClient{
 
   import ActionType._
 
-  private def actionTypeFromByte(value: Byte): ActionType = value match {
+  private def actionTypeFromByte(value: Byte): ActionType = (value: @switch) match {
     case 0 => None
     case 1 => TakePuck
     case 2 => Swing

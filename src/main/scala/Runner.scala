@@ -1,10 +1,10 @@
 import model.Move
 
 final class Runner(args: Array[String]) {
-  private val remoteProcessClient= new RemoteProcessClient(args(0), Integer.parseInt(args(1)))
+  private val remoteProcessClient = new RemoteProcessClient(args(0), Integer.parseInt(args(1)))
   private val token: String = args(2)
 
-  def run() {
+  def run(): Unit = {
     try {
       remoteProcessClient.writeToken(token)
       val teamSize = remoteProcessClient.readTeamSize()
@@ -28,22 +28,17 @@ final class Runner(args: Array[String]) {
         }
         playerContext = remoteProcessClient.readPlayerContext()
       }
-    }
-    finally {
+    } finally {
       remoteProcessClient.close()
     }
   }
 }
 
 object Runner {
-  def main(args: Array[String]) {
-    if (args.length == 3) {
-      new Runner(args).run()
-    }
-    else {
-      new Runner(Array[String]("127.0.0.1", "31001", "0000000000000000")).run()
-    }
+  def main(args: Array[String]): Unit = {
+    val params =
+      if (args.length == 3) args
+      else Array("127.0.0.1", "31001", "0000000000000000")
+    new Runner(params).run()
   }
 }
-
-

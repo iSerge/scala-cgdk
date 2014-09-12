@@ -4,7 +4,7 @@ package model
  * Этот класс описывает игровой мир. Содержит также описания всех игроков и игровых объектов (<<юнитов>>).
  */
 class World(tick: Int, tickCount: Int, width: Double, height: Double,
-            players: List[Player], hockeyists: List[Option[Hockeyist]], puck: Option[Puck])
+            players: Vector[Player], hockeyists: Vector[Option[Hockeyist]], puck: Option[Puck])
 {
   /**
    * @return Возвращает номер текущего тика.
@@ -31,13 +31,13 @@ class World(tick: Int, tickCount: Int, width: Double, height: Double,
    * @return Возвращает список игроков (в случайном порядке).
    *         После каждого тика объекты, задающие игроков, пересоздаются.
    */
-  def getPlayers: List[Player] = players
+  def getPlayers: Vector[Player] = players
 
   /**
    * @return Возвращает список хоккеистов (в случайном порядке), включая вратарей и хоккеиста стратегии,
    *         вызвавшей этот метод. После каждого тика объекты, задающие хоккеистов, пересоздаются.
    */
-  def getHockeyists: List[Option[Hockeyist]] = hockeyists
+  def getHockeyists: Vector[Option[Hockeyist]] = hockeyists
 
   /**
    * @return Возвращает шайбу.
@@ -47,17 +47,11 @@ class World(tick: Int, tickCount: Int, width: Double, height: Double,
   /**
    * @return Возвращает вашего игрока.
    */
-  def getMyPlayer: Option[Player] = players.filter(_.isMe) match {
-    case me :: _ => Some(me)
-    case Nil     => None
-  }
+  def getMyPlayer: Option[Player] = players.find(_.isMe)
 
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  def getOpponentPlayer: Option[Player] = players.filterNot(_.isMe) match {
-    case me :: _ => Some(me)
-    case Nil     => None
-  }
+  def getOpponentPlayer: Option[Player] = players.filterNot(_.isMe).headOption
 }
 
