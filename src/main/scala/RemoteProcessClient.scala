@@ -213,28 +213,13 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   private def readBytes(byteCount: Int): Array[Byte] = {
-    def result(bytes: Array[Byte], offset: Int): Array[Byte] = {
-      if (offset == byteCount) {
-        bytes
-      } else {
-        throw new IOException(s"Can't read $byteCount bytes from input stream.")
-      }
+    val bytes = Stream.continually(inputStream.read).takeWhile(-1 != _).take(byteCount).map(_.toByte).toArray
+
+    if (bytes.length != byteCount) {
+      throw new IOException(s"Can't read $byteCount bytes from input stream.")
     }
 
-    @tailrec
-    def rb(offset: Int = 0, bytes: Array[Byte] = new Array[Byte](byteCount)): Array[Byte] = {
-      if (offset < byteCount) {
-        val readByteCount = inputStream.read(bytes, offset, byteCount - offset)
-        if (readByteCount != -1) {
-          rb(offset + readByteCount)
-        } else {
-          result(bytes, offset)
-        }
-      } else {
-        result(bytes, offset)
-      }
-    }
-    rb()
+    bytes
   }
 
   private def writeBytes(bytes: Array[Byte]): Unit = {
