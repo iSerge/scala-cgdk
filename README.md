@@ -57,11 +57,11 @@ class MyStrategy extends Strategy {
 
   private def strikeNearestOpponent(self: Hockeyist, world: World, game: Game, move: Move) {
     for (nearestOpponent <- getNearestOpponent(self.x, self.y, world)) {
-      if (self.getDistanceTo(nearestOpponent) > game.getStickLength) {
+      if (self.getDistanceTo(nearestOpponent) > game.stickLength) {
         move.setSpeedUp(1.0D)
         move.setTurn(self.getAngleTo(nearestOpponent))
       }
-      if (math.abs(self.getAngleTo(nearestOpponent)) < 0.5D * game.getStickSector) {
+      if (math.abs(self.getAngleTo(nearestOpponent)) < 0.5D * game.stickSector) {
         move.setAction(ActionType.Strike)
       }
     }
@@ -76,10 +76,10 @@ class MyStrategy extends Strategy {
   private def drivePuck(self: Hockeyist, world: World, game: Game, move: Move) {
     val Some((netX, netY)) = for {
       opponentPlayer <- world.opponentPlayer
-      netX = 0.5D * (opponentPlayer.getNetBack + opponentPlayer.getNetFront)
+      netX = 0.5D * (opponentPlayer.netBack + opponentPlayer.netFront)
       netY = {
-        val ny = 0.5D * (opponentPlayer.getNetBottom + opponentPlayer.getNetTop)
-        (if (self.y < ny) 0.5D else -0.5D) * game.getGoalNetHeight
+        val ny = 0.5D * (opponentPlayer.netBottom + opponentPlayer.netTop)
+        (if (self.y < ny) 0.5D else -0.5D) * game.goalNetHeight
       }
     } yield (netX, netY)
 
@@ -90,4 +90,5 @@ class MyStrategy extends Strategy {
     }
   }
 }
+
 ```
