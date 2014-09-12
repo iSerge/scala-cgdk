@@ -37,8 +37,11 @@ final class Runner(args: Array[String]) {
 object Runner {
   def main(args: Array[String]): Unit = {
     val params =
-      if (args.length == 3) args
-      else Array("127.0.0.1", "31001", "0000000000000000")
+      if (args.length == 3) {
+        args
+      } else {
+        Array("127.0.0.1", "31001", "0000000000000000")
+      }
     new Runner(params).run()
   }
 }
