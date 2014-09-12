@@ -4,7 +4,7 @@ package model
  * Этот класс описывает игровой мир. Содержит также описания всех игроков и игровых объектов (<<юнитов>>).
  */
 class World(tick: Int, tickCount: Int, width: Double, height: Double,
-            players: List[Option[Player]], hockeyists: List[Option[Hockeyist]], puck: Option[Puck])
+            players: List[Player], hockeyists: List[Option[Hockeyist]], puck: Option[Puck])
 {
   /**
    * @return Возвращает номер текущего тика.
@@ -31,7 +31,7 @@ class World(tick: Int, tickCount: Int, width: Double, height: Double,
    * @return Возвращает список игроков (в случайном порядке).
    *         После каждого тика объекты, задающие игроков, пересоздаются.
    */
-  def getPlayers: List[Option[Player]] = players
+  def getPlayers: List[Player] = players
 
   /**
    * @return Возвращает список хоккеистов (в случайном порядке), включая вратарей и хоккеиста стратегии,
@@ -47,7 +47,7 @@ class World(tick: Int, tickCount: Int, width: Double, height: Double,
   /**
    * @return Возвращает вашего игрока.
    */
-  def getMyPlayer: Option[Player] = players.flatten.filter(_.isMe) match {
+  def getMyPlayer: Option[Player] = players.filter(_.isMe) match {
     case me :: _ => Some(me)
     case Nil     => None
   }
@@ -55,7 +55,7 @@ class World(tick: Int, tickCount: Int, width: Double, height: Double,
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  def getOpponentPlayer: Option[Player] = players.flatten.filterNot(_.isMe) match {
+  def getOpponentPlayer: Option[Player] = players.filterNot(_.isMe) match {
     case me :: _ => Some(me)
     case Nil     => None
   }

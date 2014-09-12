@@ -1,9 +1,9 @@
 package model
 
-import java.lang.StrictMath._
+import java.lang.StrictMath.{PI, atan2, hypot}
 
 /**
- * Базовый класс для определения объектов (<<юнитов>>) на игровом поле.
+ * Базовый класс для определения объектов (''юнитов'') на игровом поле.
  */
 abstract class Unit (id: Long, mass: Double, radius: Double,
                      x: Double, y: Double, speedX: Double, speedY: Double,
@@ -59,7 +59,7 @@ abstract class Unit (id: Long, mass: Double, radius: Double,
   /**
    * @param x X-координата точки.
    * @param y Y-координата точки.
-   * @return Возвращает ориентированный угол [{ @code -PI}, { @code PI}] между направлением
+   * @return Возвращает ориентированный угол `[-PI, PI]` между направлением
    *         данного объекта и вектором из центра данного объекта к указанной точке.
    */
   def getAngleTo(x: Double, y: Double): Double = {
@@ -79,7 +79,7 @@ abstract class Unit (id: Long, mass: Double, radius: Double,
 
   /**
    * @param unit Объект, к центру которого необходимо определить угол.
-   * @return Возвращает ориентированный угол [{ @code -PI}, { @code PI}] между направлением
+   * @return Возвращает ориентированный угол `[-PI, PI]` между направлением
    *         данного объекта и вектором из центра данного объекта к центру указанного объекта.
    */
   def getAngleTo(unit: Unit): Double = getAngleTo(unit.getX, unit.getY)

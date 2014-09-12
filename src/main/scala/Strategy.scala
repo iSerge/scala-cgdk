@@ -18,5 +18,5 @@ trait Strategy {
    * @param game  Различные игровые константы.
    * @param move  Результатом работы метода является изменение полей данного объекта.
    */
-  def move(self: Hockeyist, world: Option[World], game: Option[Game], move: Move)
+  def move(self: Hockeyist, world: World, game: Game, move: Move)
 }

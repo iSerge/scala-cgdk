@@ -11,12 +11,12 @@ class Puck(id: Long, mass: Double, radius: Double,
 {
 
   /**
-   * @return Возвращает идентификатор хоккеиста, контролирующего шайбу, или { @code -1}.
+   * @return Возвращает идентификатор хоккеиста, контролирующего шайбу, или `-1`.
    */
   def getOwnerHockeyistId: Long = ownerHockeyistId
 
   /**
-   * @return Возвращает идентификатор игрока, контролирующего шайбу, или { @code -1}.
+   * @return Возвращает идентификатор игрока, контролирующего шайбу, или `-1`.
    */
   def getOwnerPlayerId: Long = ownerPlayerId
 }

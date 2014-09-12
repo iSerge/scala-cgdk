@@ -3,11 +3,13 @@ package model
 /**
  * Тип хоккеиста.
  * <p/>
- * В Раунде 1 чемпионата стратегия игрока управляет двумя хоккеистами-универсалами ({@code VERSATILE}).
+ * В Раунде 1 чемпионата стратегия игрока управляет двумя хоккеистами-универсалами
+ * ([[model.HockeyistType.Versatile]]).
  * <p/>
- * В Раунде 2 команда состоит из одного {@code VERSATILE}, одного {@code FORWARD} и одного {@code DEFENCEMAN}.
+ * В Раунде 2 команда состоит из одного [[model.HockeyistType.Versatile]],
+ * одного [[model.HockeyistType.Forward]] и одного [[model.HockeyistType.Defenceman]].
  * <p/>
- * В Групповом отборе и Финале у игрока в распоряжении имеется шесть хоккеистов типа {@code RANDOM},
+ * В Групповом отборе и Финале у игрока в распоряжении имеется шесть хоккеистов типа [[model.HockeyistType.Random]],
  * однако одновременно в игре могут участвовать только трое из них. Остальные должны находиться на скамейке запасных.
  */
 sealed trait HockeyistType
@@ -18,16 +20,16 @@ object HockeyistType {
    * <p/>
    * Автоматически управляемый хоккеист. Самостоятельно перемещается вдоль вертикального отрезка,
    * расположенного перед воротами. Старается держаться на одной горизонтальной линии с шайбой.
-   * Скорость вратаря ограничена значением {@code game.goalieMaxSpeed}.
+   * Скорость вратаря ограничена значением [[model.Game#getGoalieMaxSpeed]].
    * <p/>
    * Вратарь единственный среди хоккеистов взаимодействует с шайбой напрямую (как физический объект).
    */
-  case object GOALIE extends HockeyistType
+  case object Goalie extends HockeyistType
 
   /**
    * Хоккеист со сбалансированными параметрами.
    */
-  case object VERSATILE extends HockeyistType
+  case object Versatile extends HockeyistType
 
   /**
    * Нападающий.
@@ -35,7 +37,7 @@ object HockeyistType {
    * Хоккеист, основным достоинством которого является сила удара.
    * Его слабой стороной является стойкость.
    */
-  case object FORWARD extends HockeyistType
+  case object Forward extends HockeyistType
 
   /**
    * Защитник.
@@ -43,12 +45,12 @@ object HockeyistType {
    * Хоккеист, основным достоинством которого является стойкость.
    * Его слабой стороной является точность удара.
    */
-  case object DEFENCEMAN extends HockeyistType
+  case object Defenceman extends HockeyistType
 
   /**
    * Хоккеист со случайными параметрами.
    */
-  case object RANDOM extends HockeyistType
+  case object Random extends HockeyistType
 }
 
 

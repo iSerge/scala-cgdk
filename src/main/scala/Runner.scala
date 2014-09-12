@@ -7,12 +7,12 @@ final class Runner(args: Array[String]) {
   def run() {
     try {
       remoteProcessClient.writeToken(token)
-      val teamSize = remoteProcessClient.readTeamSize
+      val teamSize = remoteProcessClient.readTeamSize()
       remoteProcessClient.writeProtocolVersion()
-      val game = remoteProcessClient.readGameContext
+      val game = remoteProcessClient.readGameContext()
       val strategies = Array.fill(teamSize) {new MyStrategy()}
 
-      var playerContext = remoteProcessClient.readPlayerContext
+      var playerContext = remoteProcessClient.readPlayerContext()
       while (None != playerContext) {
         val playerHockeyists = playerContext.get.getHockeyists
 
@@ -21,12 +21,12 @@ final class Runner(args: Array[String]) {
           playerHockeyists.zip(moves).foreach( {
             case (Some(hockeyist), move) =>
               val world = playerContext.flatMap(_.getWorld)
-              strategies(hockeyist.getTeammateIndex).move(hockeyist, world, game, move)
+              strategies(hockeyist.getTeammateIndex).move(hockeyist, world.orNull, game.orNull, move)
             case _ =>
           })
           remoteProcessClient.writeMoves(moves)
         }
-        playerContext = remoteProcessClient.readPlayerContext
+        playerContext = remoteProcessClient.readPlayerContext()
       }
     }
     finally {

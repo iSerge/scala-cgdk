@@ -5,10 +5,10 @@ package model
  */
 class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
                 radius: Double, x: Double, y: Double, speedX: Double, speedY: Double,
-                angle: Double, angularSpeed: Double, teammate: Boolean, hokeyistType: Option[HockeyistType],
+                angle: Double, angularSpeed: Double, teammate: Boolean, hokeyistType: HockeyistType,
                 strength: Int, endurance: Int, dexterity: Int, agility: Int, stamina: Double,
-                state: Option[HockeyistState], originalPositionIndex: Int, remainingKnockdownTicks: Int,
-                remainingCooldownTicks: Int, swingTicks: Int, lastAction: Option[ActionType],
+                state: HockeyistState, originalPositionIndex: Int, remainingKnockdownTicks: Int,
+                remainingCooldownTicks: Int, swingTicks: Int, lastAction: ActionType,
                 lastActionTick: Option[Integer])
   extends Unit(id, mass, radius, x, y, speedX, speedY, angle, angularSpeed)
 {
@@ -24,14 +24,14 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
   def getTeammateIndex: Int = teammateIndex
 
   /**
-   * @return Возвращает { @code true}, если и только если данный хоккеист входит в команду вашего игрока.
+   * @return Возвращает `true`, если и только если данный хоккеист входит в команду вашего игрока.
    */
   def isTeammate: Boolean = teammate
 
   /**
    * @return Возвращает тип хоккеиста.
    */
-  def getType: Option[HockeyistType] = hokeyistType
+  def getType: HockeyistType = hokeyistType
 
   /**
    * @return Возвращает значение атрибута сила.
@@ -61,43 +61,43 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
   /**
    * @return Возвращает состояние хоккеиста.
    */
-  def getState: Option[HockeyistState] = state
+  def getState: HockeyistState = state
 
   /**
-   * @return Возвращает индекс исходной позиции хоккеиста или { @code -1} для вратаря или хоккеиста,
+   * @return Возвращает индекс исходной позиции хоккеиста или `1` для вратаря или хоккеиста,
    *         отдыхающего за пределами игрового поля. На эту позицию хоккеист будет помещён при разыгрывании шайбы.
-   *         При выполнении действия замена { @code ActionType.SUBSTITUTE} индексы исходных позиций хоккеистов,
+   *         При выполнении действия замена [[model.ActionType.Substitute]] индексы исходных позиций хоккеистов,
    *         участвующих в замене, меняются местами.
    */
   def getOriginalPositionIndex: Int = originalPositionIndex
 
   /**
    * @return Возвращает количество тиков, по прошествии которого хоккеист восстановится после падения,
-   *         или { @code 0}, если хоккеист не сбит с ног.
+   *         или `0`, если хоккеист не сбит с ног.
    */
   def getRemainingKnockdownTicks: Int = remainingKnockdownTicks
 
   /**
    * @return Возвращает количество тиков, по прошествии которого хоккеист сможет совершить какое-либо
-   *         действие ({ @code move.action}), или { @code 0}, если хоккеист может совершить действие в данный тик.
+   *         действие ([[model.Move#setAction]]), или `0`, если хоккеист может совершить действие в данный тик.
    */
   def getRemainingCooldownTicks: Int = remainingCooldownTicks
 
   /**
-   * @return Для хоккеиста, находящегося в состоянии замаха ({ @code HockeyistState.SWINGING}),
-   *         возвращает количество тиков, прошедших от начала замаха. В противном случае возвращает { @code 0}.
+   * @return Для хоккеиста, находящегося в состоянии замаха ([[model.HockeyistState.Swinging]]),
+   *         возвращает количество тиков, прошедших от начала замаха. В противном случае возвращает `0`.
    */
   def getSwingTicks: Int = swingTicks
 
   /**
-   * @return Возвращает последнее действие ({ @code move.action}), совершённое хоккеистом, или { @code None}
-   *         в случае, если хоккеист ещё не совершил ни одного действия.
+   * @return Возвращает последнее действие ([[model.Move#setAction]]), совершённое хоккеистом,
+   *         или [[model.ActionType.None]] в случае, если хоккеист ещё не совершил ни одного действия.
    */
-  def getLastAction: Option[ActionType] = lastAction
+  def getLastAction: ActionType = lastAction
 
   /**
-   * @return Возвращает номер тика, в который хоккеист совершил своё последние действие ({ @code move.action}),
-   *         или { @code None} в случае, если хоккеист ещё не совершил ни одного действия.
+   * @return Возвращает номер тика, в который хоккеист совершил своё последние действие ([[model.Move#setAction]]),
+   *         или `None` в случае, если хоккеист ещё не совершил ни одного действия.
    */
   def getLastActionTick: Option[Integer] = lastActionTick
 }

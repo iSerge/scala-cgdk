@@ -3,12 +3,12 @@ package model
 /**
  * Возможные действия хоккеиста.
  * <p/>
- * Хоккеист может совершить действие, если он не сбит с ног ({@code HockeyistState.KNOCKED_DOWN}),
- * не отдыхает ({@code HockeyistState.RESTING}) и уже восстановился после своего предыдущего действия
- * (значение {@code hockeyist.remainingCooldownTicks} равно {@code 0}).
+ * Хоккеист может совершить действие, если он не сбит с ног ([[model.HockeyistState.KnockedDown]]),
+ * не отдыхает ([[model.HockeyistState.Resting]]) и уже восстановился после своего предыдущего действия
+ * (значение [[model.Hockeyist#getRemainingCooldownTicks]] равно `0`).
  * <p/>
- * Если хоккеист замахивается клюшкой ({@code HockeyistState.SWINGING}), то из действий ему доступны только
- * {@code ActionType.STRIKE} и {@code ActionType.CANCEL_STRIKE}.
+ * Если хоккеист замахивается клюшкой ([[model.HockeyistState.Swinging]]), то из действий ему доступны только
+ * [[model.ActionType.Strike]] и [[model.ActionType.CancelStrike]].
  */
 sealed trait ActionType
 
@@ -17,70 +17,72 @@ object ActionType {
   /**
    * Ничего не делать.
    */
-  case object NONE extends ActionType
+  case object None extends ActionType
 
   /**
    * Взять шайбу.
    * <p/>
    * Если хоккеист уже контролирует шайбу, либо шайба находится вне зоны досягаемости клюшки хоккеиста (смотрите
-   * документацию к значениям {@code game.stickLength} и {@code game.stickSector}), то действие игнорируется.
+   * документацию к значениям [[model.Game#getStickLength]] и [[model.Game#getStickSector]]), то действие игнорируется.
    * <p/>
    * В противном случае хоккеист попытается установить контроль над шайбой и, с определённой вероятностью,
-   * это сделает ((смотрите документацию к {@code game.pickUpPuckBaseChance} и {@code game.takePuckAwayBaseChance})).
+   * это сделает ((смотрите документацию к [[model.Game#getPickUpPuckBaseChance]]
+   * и [[model.Game#getTakePuckAwayBaseChance]])).
    */
-  case object TAKE_PUCK extends ActionType
+  case object TakePuck extends ActionType
 
   /**
    * Замахнуться для удара.
    * <p/>
    * Хоккеист замахивается для увеличения силы удара. Чем больше тиков пройдёт с момента начала замаха до удара,
    * тем большее воздействие будет на попавшие под удар объекты. Максимальное количество учитываемых тиков ограничено
-   * значением {@code game.maxEffectiveSwingTicks}.
+   * значением [[model.Game#getMaxEffectiveSwingTicks]].
    */
-  case object SWING extends ActionType
+  case object Swing extends ActionType
 
   /**
    * Ударить.
    * <p/>
    * Хоккеист наносит размашистый удар по всем объектам, находящимся в зоне досягаемости его клюшки. Удар может быть
-   * совершён как с предварительным замахом ({@code SWING}), так и без него (в этом случае сила удара будет меньше).
+   * совершён как с предварительным замахом ([[model.ActionType.Swing]]), так и без него (в этом случае сила удара
+   * будет меньше).
    * <p/>
    * Объекты (шайба и хоккеисты, кроме вратарей), попавшие под удар, приобретут некоторый импульс в направлении,
    * совпадающим с направлением удара. При ударе по хоккеисту есть также некоторый шанс сбить его с ног.
    */
-  case object STRIKE extends ActionType
+  case object Strike extends ActionType
 
   /**
    * Отменить удар.
    * <p/>
-   * Хоккеист выходит из состояния замаха ({@code SWING}), не совершая удар. Это позволяет
+   * Хоккеист выходит из состояния замаха ([[model.ActionType.Swing]]), не совершая удар. Это позволяет
    * сэкономить немного выносливости, а также быстрее совершить новое действие
-   * (смотрите документацию к {@code game.cancelStrikeActionCooldownTicks}).
+   * (смотрите документацию к [[model.Game#getCancelStrikeActionCooldownTicks]]).
    * <p/>
    * Если хоккеист не совершает замах клюшкой, то действие игнорируется.
    */
-  case object CANCEL_STRIKE extends ActionType
+  case object CancelStrike extends ActionType
 
   /**
    * Отдать пас.
    * <p/>
    * Хоккеист пытается передать контролируемую им шайбу другому хоккеисту. Для этого необходимо указать относительную
-   * силу паса ({@code move.passPower}) и его направление ({@code move.passAngle}). В противном случае пас будет отдан
-   * в направлении, соответствующем направлению хоккеиста, с максимально возможной силой.
+   * силу паса ([[model.Move#setPassPower]]) и его направление ([[model.Move#setPassAngle]]). В противном случае пас
+   * будет отдан в направлении, соответствующем направлению хоккеиста, с максимально возможной силой.
    * <p/>
    * Если хоккеист не контролирует шайбу, то действие игнорируется.
    */
-  case object PASS extends ActionType
+  case object Pass extends ActionType
 
   /**
    * Заменить активного хоккеиста сидящим на скамейке запасных.
    * <p/>
    * Замена выполняется только на своей половине поля, при этом расстояние от центра хоккеиста до верхней границы
-   * игровой площадки не должно превышать {@code game.substitutionAreaHeight}. Дополнительно нужно указать индекс
-   * хоккеиста ({@code move.teammateIndex}), на которого будет произведена замена.
+   * игровой площадки не должно превышать [[model.Game#getSubstitutionAreaHeight]]. Дополнительно нужно указать индекс
+   * хоккеиста ([[model.Move#setTeammateIndex]]), на которого будет произведена замена.
    * <p/>
-   * Если указан некорректный индекс, или скорость хоккеиста превышает {@code game.maxSpeedToAllowSubstitute},
+   * Если указан некорректный индекс, или скорость хоккеиста превышает [[model.Game#getMaxSpeedToAllowSubstitute]],
    * то действие будет проигнорировано.
    */
-  case object SUBSTITUTE extends ActionType
+  case object Substitute extends ActionType
 }

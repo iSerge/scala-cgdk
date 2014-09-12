@@ -104,21 +104,21 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
 
   /**
    * @return Возвращает длительность задержки, применяемой к хоккеисту
-   *         после совершения им большинства действий ({ @code move.action}).
+   *         после совершения им большинства действий ([[model.Move#setAction]]).
    *         В течение этого времени хоккеист не может совершать новые действия.
    */
   def getDefaultActionCooldownTicks: Int = defaultActionCooldownTicks
 
   /**
    * @return Возвращает длительность задержки, применяемой к хоккеисту
-   *         после совершения им действия замах ({ @code ActionType.SWING}).
+   *         после совершения им действия замах ([[model.ActionType.Swing]]).
    *         В течение этого времени хоккеист не может совершать новые действия.
    */
   def getSwingActionCooldownTicks: Int = swingActionCooldownTicks
 
   /**
    * @return Возвращает длительность задержки, применяемой к хоккеисту
-   *         после отмены им удара ({ @code ActionType.CANCEL_STRIKE}).
+   *         после отмены им удара ([[model.ActionType.CancelStrike]]).
    *         В течение этого времени хоккеист не может совершать новые действия.
    */
   def getCancelStrikeActionCooldownTicks: Int = cancelStrikeActionCooldownTicks
@@ -165,14 +165,14 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
   def getMaxActionChance: Double = maxActionChance
 
   /**
-   * @return Возвращает стандартное отклонение распределения Гаусса для угла удара ({ @code ActionType.STRIKE})
+   * @return Возвращает стандартное отклонение распределения Гаусса для угла удара ([[model.ActionType.Strike]])
    *         хоккеиста при базовом значении атрибута ловкость. Чем выше ловкость конкретного хоккеиста,
    *         тем точнее его удар.
    */
   def getStrikeAngleDeviation: Double = strikeAngleDeviation
 
   /**
-   * @return Возвращает стандартное отклонение распределения Гаусса для угла паса ({ @code ActionType.PASS})
+   * @return Возвращает стандартное отклонение распределения Гаусса для угла паса ([[model.ActionType.Pass]])
    *         хоккеиста при базовом значении атрибута ловкость. Чем выше ловкость конкретного хоккеиста,
    *         тем точнее его пас.
    */
@@ -204,7 +204,8 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
 
   /**
    * @return Возвращает увеличение коэффициента силы удара за каждый тик замаха.
-   *         Максимальное количество учитываемых тиков ограничено значением { @code maxEffectiveSwingTicks}.
+   *         Максимальное количество учитываемых тиков ограничено значением
+   *         [[model.Game#getMaxEffectiveSwingTicks]].
    */
   def getStrikePowerGrowthFactor: Double = strikePowerGrowthFactor
 
@@ -218,7 +219,7 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
   def getStrikePuckBaseChance: Double = strikePuckBaseChance
 
   /**
-   * @return Возвращает шанс ударом ({ @code ActionType.STRIKE}) сбить с ног другого хоккеиста при максимальной
+   * @return Возвращает шанс ударом ([[model.ActionType.Strike]]) сбить с ног другого хоккеиста при максимальной
    *         длительности замаха. Среднее значение атрибутов сила и ловкость хоккеиста, совершающего удар,
    *         увеличивает шанс сбить с ног. Значение атрибута стойкость атакуемого хоккеиста уменьшает шанс на падение.
    */
@@ -243,30 +244,30 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
 
   /**
    * @return Возвращает коэффициент силы паса. Умножается на устанавливаемое стратегией в интервале
-   *         [{ @code 0.0}, { @code 1.0}] значение силы паса ({ @code move.passPower}).
+   *         `[0.0, 1.0]` значение силы паса ([[model.Move#setPassPower]]).
    */
   def getPassPowerFactor: Double = passPowerFactor
 
   /**
    * @return Возвращает максимальное значение выносливости хоккеиста. Выносливость тратится на перемещение
    *         и совершение хоккеистом различных действий. Каждый тик может восстановиться небольшое количество
-   *         выносливости в зависимости от состояния хоккеиста ({ @code hockeyist.state}). По мере расходования
+   *         выносливости в зависимости от состояния хоккеиста ([[model.Hockeyist#getState]]). По мере расходования
    *         выносливости все атрибуты (соответственно, и эффективность всех действий) хоккеиста равномерно
-   *         уменьшаются и достигают значения { @code zeroStaminaHockeyistEffectivenessFactor} (от начальных
+   *         уменьшаются и достигают значения [[model.Game#getZeroStaminaHockeyistEffectivenessFactor]] (от начальных
    *         показателей) при падении выносливости до нуля. Хоккеист не восстанавливает выносливость в состояниях
-   *         { @code HockeyistState.SWINGING} и { @code HockeyistState.KNOCKED_DOWN}.
+   *         [[model.HockeyistState.Swinging]] и [[model.HockeyistState.KnockedDown]].
    */
   def getHockeyistMaxStamina: Double = hockeyistMaxStamina
 
   /**
    * @return Возвращает значение, на которое увеличивается выносливость хоккеиста за каждый тик в состоянии
-   *         { @code HockeyistType.ACTIVE}.
+   *         [[model.HockeyistState.Active]].
    */
   def getActiveHockeyistStaminaGrowthPerTick: Double = activeHockeyistStaminaGrowthPerTick
 
   /**
    * @return Возвращает значение, на которое увеличивается выносливость хоккеиста за каждый тик в состоянии
-   *         { @code HockeyistType.RESTING}.
+   *         [[model.HockeyistState.Resting]].
    */
   def getRestingHockeyistStaminaGrowthPerTick: Double = restingHockeyistStaminaGrowthPerTick
 
@@ -277,51 +278,51 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на максимальное по модулю
-   *         ускорение/замедление хоккеиста ({ @code move.speedUp}) за 1 тик. Для меньших значений ускорения затраты
-   *         выносливости пропорционально падают.
+   *         ускорение/замедление хоккеиста ([[model.Move#setSpeedUp]]) за 1 тик. Для меньших значений
+   *         ускорения затраты выносливости пропорционально падают.
    */
   def getSpeedUpStaminaCostFactor: Double = speedUpStaminaCostFactor
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на максимальный по модулю
-   *         угол поворота хоккеиста ({ @code move.turn}) за 1 тик. Для меньших значений угла поворота затраты
+   *         угол поворота хоккеиста ([[model.Move#setTurn]]) за 1 тик. Для меньших значений угла поворота затраты
    *         выносливости пропорционально падают.
    */
   def getTurnStaminaCostFactor: Double = turnStaminaCostFactor
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на совершение действия
-   *         { @code ActionType.TAKE_PUCK}.
+   *         [[model.ActionType.TakePuck]].
    */
   def getTakePuckStaminaCost: Double = takePuckStaminaCost
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на совершение действия
-   *         { @code ActionType.SWING}.
+   *         [[model.ActionType.Swing]].
    */
   def getSwingStaminaCost: Double = swingStaminaCost
 
   /**
    * @return Возвращает базовое количество выносливости, которое необходимо затратить на совершение действия
-   *         { @code ActionType.STRIKE}.
+   *         [[model.ActionType.Strike]].
    */
   def getStrikeStaminaBaseCost: Double = strikeStaminaBaseCost
 
   /**
-   * @return Возвращает увеличение затрат выносливости на удар ({ @code ActionType.STRIKE}) за каждый тик замаха.
-   *         Максимальное количество учитываемых тиков ограничено значением { @code maxEffectiveSwingTicks}.
+   * @return Возвращает увеличение затрат выносливости на удар ([[model.ActionType.Strike]]) за каждый тик замаха.
+   *         Максимальное количество учитываемых тиков ограничено значением [[model.Game#getMaxEffectiveSwingTicks]].
    */
   def getStrikeStaminaCostGrowthFactor: Double = strikeStaminaCostGrowthFactor
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на совершение действия
-   *         { @code ActionType.CANCEL_STRIKE}.
+   *         [[model.ActionType.CancelStrike]].
    */
   def getCancelStrikeStaminaCost: Double = cancelStrikeStaminaCost
 
   /**
    * @return Возвращает количество выносливости, которое необходимо затратить на совершение действия
-   *         { @code ActionType.PASS}.
+   *         [[model.ActionType.Pass]].
    */
   def getPassStaminaCost: Double = passStaminaCost
 
@@ -341,7 +342,7 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
   def getStruckHockeyistInitialSpeedFactor: Double = struckHockeyistInitialSpeedFactor
 
   /**
-   * @return Возвращает модуль ускорения, приобретаемого хоккеистом, при { @code move.speedUp} равном 1.0,
+   * @return Возвращает модуль ускорения, приобретаемого хоккеистом, при [[model.Move#setSpeedUp]] равном 1.0,
    *         базовом значении атрибута подвижность и максимальном запасе выносливости.
    *         Направление ускорения совпадает с направлением хоккеиста.
    *         В игре отсутствует специальное ограничение на максимальную скорость хоккеиста, однако все
@@ -351,7 +352,7 @@ class Game(randomSeed: Long, tickCount: Int, worldWidth: Double, worldHeight: Do
   def getHockeyistSpeedUpFactor: Double = hockeyistSpeedUpFactor
 
   /**
-   * @return Возвращает модуль ускорения, приобретаемого хоккеистом, при { @code move.speedUp} равном -1.0,
+   * @return Возвращает модуль ускорения, приобретаемого хоккеистом, при [[model.Move#setSpeedUp]] равном -1.0,
    *         базовом значении атрибута подвижность и максимальном запасе выносливости.
    *         Направление ускорения противоположно направлению хоккеиста.
    *         В игре отсутствует специальное ограничение на максимальную скорость хоккеиста, однако все

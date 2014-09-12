@@ -6,7 +6,7 @@ package model
 class Move {
   private var speedUp: Double = .0
   private var turn: Double = .0
-  private var action: ActionType = ActionType.NONE
+  private var action: ActionType = ActionType.None
   private var passPower: Double = 1.0D
   private var passAngle: Double = .0
   private var teammateIndex: Int = -1
@@ -19,7 +19,7 @@ class Move {
   /**
    * Устанавливает ускорение хоккеиста.
    * <p/>
-   * Ускорение является относительным и должно лежать в интервале от {@code -1.0} до {@code 1.0}.
+   * Ускорение является относительным и должно лежать в интервале от `[-1.0, 1.0]`.
    * Значения, выходящие за указанный интервал, будут приведены к ближайшей его границе.
    */
   def setSpeedUp(speedUp: Double) {
@@ -36,7 +36,7 @@ class Move {
    * <p/>
    * Угол поворота задаётся в радианах относительно текущего направления хоккеиста и для хоккеиста
    * с базовым значением атрибута подвижность и максимальным запасом выносливости ограничен
-   * интервалом от {@code -game.hockeyistTurnAngleFactor} до {@code game.hockeyistTurnAngleFactor}.
+   * интервалом от -[[model.Game#getHockeyistTurnAngleFactor]] до [[model.Game#getHockeyistTurnAngleFactor]].
    * Значения, выходящие за указанный интервал, будут приведены к ближайшей его границе.
    * Положительные значения соответствуют повороту по часовой стрелке.
    */
@@ -62,11 +62,11 @@ class Move {
   def getPassPower: Double = passPower
 
   /**
-   * Устанавливает силу паса ({@code ActionType.PASS}).
+   * Устанавливает силу паса ([[model.ActionType.Pass]]).
    * <p/>
-   * Сила паса является относительной величиной и должна лежать в интервале от {@code 0.0} до {@code 1.0}.
+   * Сила паса является относительной величиной и должна лежать в интервале от `0.0` до `1.0`.
    * Значения, выходящие за указанный интервал, будут приведены к ближайшей его границе.
-   * К значению реальной силы паса применяется также поправочный коэффициент {@code game.passPowerFactor}.
+   * К значению реальной силы паса применяется также поправочный коэффициент [[model.Game#getPassPowerFactor]].
    */
   def setPassPower(passPower: Double) {
     this.passPower = passPower
@@ -78,10 +78,11 @@ class Move {
   def getPassAngle: Double = passAngle
 
   /**
-   * Устанавливает направление паса ({@code ActionType.PASS}).
+   * Устанавливает направление паса ([[model.ActionType.Pass]]).
    * <p/>
    * Направление паса задаётся в радианах относительно текущего направления хоккеиста
-   * и должно лежать в интервале от {@code -0.5 * game.passSector} до {@code 0.5 * game.passSector}.
+   * и должно лежать в интервале от `-0.5 * [[model.Game#getPassSector]]`
+   * до `0.5 * [[model.Game#getPassSector]]`.
    * Значения, выходящие за указанный интервал, будут приведены к ближайшей его границе.
    */
   def setPassAngle(passAngle: Double) {
@@ -90,14 +91,14 @@ class Move {
 
   /**
    * @return Возвращает текущий индекс хоккеиста, на которого будет произведена замена,
-   *         или { @code -1}, если хоккеист не был указан.
+   *         или `-1`, если хоккеист не был указан.
    */
   def getTeammateIndex: Int = teammateIndex
 
   /**
-   * Устанавливает индекс хоккеиста для выполнения замены ({@code ActionType.SUBSTITUTE}).
+   * Устанавливает индекс хоккеиста для выполнения замены ([[model.ActionType.Substitute]]).
    * <p/>
-   * Индексация начинается с нуля. Значением по умолчанию является {@code -1}.
+   * Индексация начинается с нуля. Значением по умолчанию является `-1`.
    * Если в команде игрока не существует хоккеиста с указанным индексом, то замена произведена не будет.
    */
   def setTeammateIndex(teammateIndex: Int) {
