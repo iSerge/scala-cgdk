@@ -97,3 +97,9 @@ class MyStrategy extends Strategy {
   }
 }
 ```
+
+Contributors
+------------
+
+* Serge Ivanov -- https://github.com/iSerge/
+* Alexander Myltsev -- https://github.com/alexander-myltsev
