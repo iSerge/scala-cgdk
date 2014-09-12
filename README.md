@@ -16,6 +16,7 @@ sbt eclipse
 
 ```scala
 import model.{Hockeyist, World, Game, Move, ActionType, HockeyistType, HockeyistState, Puck}
+import MyStrategy.{StrikeAngle, getNearestOpponent}
 
 object MyStrategy {
   private def getNearestOpponent(x: Double, y: Double, world: World): Option[Hockeyist] = {
@@ -25,20 +26,19 @@ object MyStrategy {
       => hockeyist
     })
 
-    hockeists match {
-      case Nil => None
-      case _   => Some(hockeists.minBy { hockeyist => math.hypot(x - hockeyist.x, y - hockeyist.y)})
+    if (hockeists.isEmpty) {
+      None
+    } else {
+      Some(hockeists.minBy { hockeyist => math.hypot(x - hockeyist.x, y - hockeyist.y)})
     }
   }
 
-  private[MyStrategy] final val STRIKE_ANGLE = 1.0D * math.Pi / 180.0D
+  private[MyStrategy] final val StrikeAngle = 1.0D * math.Pi / 180.0D
 }
 
 class MyStrategy extends Strategy {
 
-  import MyStrategy.{STRIKE_ANGLE, getNearestOpponent}
-
-  def move(self: Hockeyist, world: World, game: Game, move: Move) = {
+  def move(self: Hockeyist, world: World, game: Game, move: Move): Unit = {
     (self.state, world.puck) match {
       case (Some(HockeyistState.Swinging), _) => move.setAction(ActionType.Strike)
       case (_, Some(puck)) =>
@@ -85,7 +85,7 @@ class MyStrategy extends Strategy {
 
     val angleToNet = self.getAngleTo(netX, netY)
     move.setTurn(angleToNet)
-    if (math.abs(angleToNet) < STRIKE_ANGLE) {
+    if (math.abs(angleToNet) < StrikeAngle) {
       move.setAction(ActionType.Swing)
     }
   }
