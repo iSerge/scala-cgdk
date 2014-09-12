@@ -46,7 +46,7 @@ class MyStrategy extends Strategy {
 
   def move(self: Hockeyist, world: World, game: Game, move: Move): Unit = {
     (self.state, world.puck) match {
-      case (Some(HockeyistState.Swinging), _) => move.setAction(ActionType.Strike)
+      case (Some(HockeyistState.Swinging), _) => move.action = ActionType.Strike
       case (_, Some(puck)) =>
         if (puck.ownerPlayerId == self.playerId) {
           if (puck.ownerHockeyistId == self.id) {
@@ -63,20 +63,20 @@ class MyStrategy extends Strategy {
 
   private def strikeNearestOpponent(self: Hockeyist, world: World, game: Game, move: Move) {
     for (nearestOpponent <- getNearestOpponent(self.x, self.y, world)) {
-      if (self.getDistanceTo(nearestOpponent) > game.stickLength) {
-        move.setSpeedUp(1.0D)
-        move.setTurn(self.getAngleTo(nearestOpponent))
+      if (self.distanceTo(nearestOpponent) > game.stickLength) {
+        move.speedUp = 1.0D
+        move.turn = self.angleTo(nearestOpponent)
       }
-      if (math.abs(self.getAngleTo(nearestOpponent)) < 0.5D * game.stickSector) {
-        move.setAction(ActionType.Strike)
+      if (math.abs(self.angleTo(nearestOpponent)) < 0.5D * game.stickSector) {
+        move.action = ActionType.Strike
       }
     }
   }
 
   private def moveToPuck(self: Hockeyist, puck: Puck, move: Move) {
-    move.setSpeedUp(1.0D)
-    move.setTurn(self.getAngleTo(puck))
-    move.setAction(ActionType.TakePuck)
+    move.speedUp = 1.0D
+    move.turn = self.angleTo(puck)
+    move.action = ActionType.TakePuck
   }
 
   private def drivePuck(self: Hockeyist, world: World, game: Game, move: Move) {
@@ -89,10 +89,10 @@ class MyStrategy extends Strategy {
       }
     } yield (netX, netY)
 
-    val angleToNet = self.getAngleTo(netX, netY)
-    move.setTurn(angleToNet)
+    val angleToNet = self.angleTo(netX, netY)
+    move.turn = angleToNet
     if (math.abs(angleToNet) < StrikeAngle) {
-      move.setAction(ActionType.Swing)
+      move.action = ActionType.Swing
     }
   }
 }
