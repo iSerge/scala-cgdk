@@ -109,7 +109,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     else None
   }
 
-  private def readPlayers(): Vector[Player] = {
+  private def readPlayers(): Vector[Option[Player]] = {
     val playerCount: Int = readInt()
 
     Vector.fill(playerCount) {
@@ -117,7 +117,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
         readBoolean(), readBoolean()))
       else None
-    }.flatten
+    }
   }
 
   private def readHockeyists(): Vector[Option[Hockeyist]] = {
