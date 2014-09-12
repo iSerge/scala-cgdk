@@ -5,7 +5,7 @@ import java.nio.ByteOrder
 
 import model.{ActionType, Move, PlayerContext, Game, World, Player, HockeyistType, HockeyistState, Hockeyist, Puck}
 
-import scala.annotation.switch
+import scala.annotation.{tailrec, switch}
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val BufferSizeBytes: Int = 1 << 20
@@ -13,16 +13,16 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val IntegerSizeBytes: Int = Integer.SIZE / java.lang.Byte.SIZE
   private val LongSizeBytes: Int = java.lang.Long.SIZE / java.lang.Byte.SIZE
 
-  private val socket = {
-    val socket = new Socket(host, port)
-    socket.setSendBufferSize(BufferSizeBytes)
-    socket.setReceiveBufferSize(BufferSizeBytes)
-    socket.setTcpNoDelay(true)
-    socket
+  private val (socket, inputStream, outputStream) = {
+    val socket = {
+      val skt = new Socket(host, port)
+      skt.setSendBufferSize(BufferSizeBytes)
+      skt.setReceiveBufferSize(BufferSizeBytes)
+      skt.setTcpNoDelay(true)
+      skt
+    }
+    (socket, socket.getInputStream, socket.getOutputStream)
   }
-
-  private val inputStream = socket.getInputStream
-  private val outputStream = socket.getOutputStream
   private val outputStreamBuffer = new ByteArrayOutputStream(BufferSizeBytes)
 
   sealed trait MessageType
@@ -269,15 +269,22 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private def writeDouble(value: Double): Unit = {
     writeLong(java.lang.Double.doubleToLongBits(value))
   }
-
+  
   private def readBytes(byteCount: Int): Array[Byte] = {
-    val bytes = Stream.continually(inputStream.read).takeWhile(-1 != _).take(byteCount).map(_.toByte).toArray
-
-    if (bytes.length != byteCount) {
-      throw new IOException(s"Can't read $byteCount bytes from input stream.")
+    def result(bytes: Array[Byte], offset: Int) = {
+      if (offset == byteCount) bytes
+      else throw new IOException(s"Can't read $byteCount bytes from input stream.")
     }
 
-    bytes
+    @tailrec
+    def rb(offset: Int = 0, bytes: Array[Byte] = new Array[Byte](byteCount)): Array[Byte] = {
+      if (offset < byteCount) {
+        val readByteCount = inputStream.read(bytes, offset, byteCount - offset)
+        if (readByteCount != -1) rb(offset + readByteCount)
+        else result(bytes, offset)
+      } else result(bytes, offset)
+    }
+    rb()
   }
 
   private def writeBytes(bytes: Array[Byte]): Unit = {
