@@ -100,10 +100,10 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def readWorld(): Option[World] = {
     if (readBoolean()) {
-      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck()))
-    } else {
-      None
-    }
+      val world = new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck())
+      if (world.puck.isDefined) { Some(world) }
+      else { None }
+    } else { None }
   }
 
   private def readPlayers(): Vector[Option[Player]] = {
@@ -141,13 +141,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def longToId(v: Long): Option[Long] = if (-1 == v) None else Some(v)
 
-  private def readPuck(): Option[Puck] = {
+  private def readPuck(): Puck = {
     if (readBoolean()) {
-      Some(new Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), longToId(readLong()), longToId(readLong())))
-    } else {
-      None
-    }
+      Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), longToId(readLong()), longToId(readLong()))
+    } else { Puck.empty }
   }
 
   private def readEnum[E](fromByte: Byte => E): E = fromByte(readBytes(1)(0))

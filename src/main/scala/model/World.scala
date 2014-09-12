@@ -19,7 +19,7 @@ class World(val tick: Int,
             val height: Double,
             val players: Vector[Option[Player]],
             val hockeyists: Vector[Option[Hockeyist]],
-            val puck: Option[Puck]) {
+            val puck: Puck) {
 
   /**
    * @return Возвращает вашего игрока.

@@ -22,3 +22,25 @@ class Puck(id: Long,
            val ownerHockeyistId: Option[Long],
            val ownerPlayerId: Option[Long])
   extends Unit(id, mass, radius, x, y, speedX, speedY, 0.0D, 0.0D)
+
+object Puck {
+  def apply(id: Long,
+            mass: Double,
+            radius: Double,
+            x: Double,
+            y: Double,
+            speedX: Double,
+            speedY: Double,
+            ownerHockeyistId: Option[Long],
+            ownerPlayerId: Option[Long]): Puck = new Puck(id, mass, radius, x, y, speedX, speedY, ownerHockeyistId, ownerPlayerId)
+
+  // scalastyle:off null
+  final val empty: Puck = null
+
+  implicit class PuckOps(val underline: Puck) extends AnyVal {
+    def isEmpty: Boolean = underline eq null
+
+    def isDefined: Boolean = underline ne null
+  }
+  // scalastyle:on null
+}
