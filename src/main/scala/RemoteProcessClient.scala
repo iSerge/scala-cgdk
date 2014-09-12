@@ -80,15 +80,15 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
       moves.foreach { move =>
         writeBoolean(value = true)
-        writeDouble(move.getSpeedUp)
-        writeDouble(move.getTurn)
-        writeEnum(move.getAction, actionTypeToByte)
-        move.getAction match {
+        writeDouble(move.speedUp)
+        writeDouble(move.turn)
+        writeEnum(move.action, actionTypeToByte)
+        move.action match {
           case ActionType.Pass =>
-            writeDouble(move.getPassPower)
-            writeDouble(move.getPassAngle)
+            writeDouble(move.passPower)
+            writeDouble(move.passAngle)
           case ActionType.Substitute =>
-            writeInt(move.getTeammateIndex)
+            writeInt(move.teammateIndex)
           case _ =>
         }
       }

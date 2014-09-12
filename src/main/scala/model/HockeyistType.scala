@@ -52,5 +52,3 @@ object HockeyistType {
    */
   case object Random extends HockeyistType
 }
-
-

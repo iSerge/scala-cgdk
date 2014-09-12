@@ -1,5 +1,11 @@
+Introduction
+------------
+
+This is [Scala SBT](http://www.scala-sbt.org) project. Download [SBT](http://www.scala-sbt.org/download.html) and then
+run it from command line in root of the project.
+
 How to generate IDE projects
------------------------------------------
+----------------------------
 
 For Intellij Idea run sbt command gen-idea:
 ```shell
@@ -90,5 +96,10 @@ class MyStrategy extends Strategy {
     }
   }
 }
-
 ```
+
+Contributors
+------------
+
+* Serge Ivanov -- https://github.com/iSerge/
+* Alexander Myltsev -- https://github.com/alexander-myltsev
