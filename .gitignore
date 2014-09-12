@@ -15,13 +15,6 @@ hs_err_pid*
 /lib
 /build.xml
 
-# Intellij Idea user specific project files
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/datasources.xml
-.idea/dataSources.ids
-.idea/libraries/
-
 # sbt specific
 target/
 lib_managed/
@@ -32,3 +25,21 @@ project/plugins/target/
 project/plugins/lib_managed/
 project/plugins/src_managed/
 /bin
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.cache
+.classpath
+.project
+.scala_dependencies
+.settings
+.target/
+
+# Mac
+.DS_Store
