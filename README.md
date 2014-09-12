@@ -1,3 +1,16 @@
+How to generate IDE projects
+-----------------------------------------
+
+For Intellij Idea run sbt command gen-idea:
+```shell
+sbt gen-idea
+```
+
+For Eclipse run sbt comand ecpilse:
+```shell
+sbt eclipse
+```
+
 [Quick-start simple strategy](http://russianaicup.ru/p/quick) ported to Scala
 -----------------------------------------------------------------------------
 
