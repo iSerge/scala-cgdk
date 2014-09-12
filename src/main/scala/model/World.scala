@@ -24,10 +24,10 @@ class World(val tick: Int,
   /**
    * @return Возвращает вашего игрока.
    */
-  lazy val myPlayer: Option[Player] = players.flatten.find(_.me)
+  lazy val myPlayer: Option[Player] = players.collectFirst({case Some(p) if p.me => p})
 
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  lazy val opponentPlayer: Option[Player] = players.flatten.find(!_.me)
+  lazy val opponentPlayer: Option[Player] = players.collectFirst({case Some(p) if !p.me => p})
 }

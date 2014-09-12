@@ -88,7 +88,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
             writeDouble(move.passPower)
             writeDouble(move.passAngle)
           case ActionType.Substitute =>
-            writeInt(move.teammateIndex)
+            writeInt(move.teammateIndex.getOrElse(-1))
           case _ =>
         }
       }
@@ -139,10 +139,12 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
+  private def longToId(v: Long): Option[Long] = if (-1 == v) None else Some(v)
+
   private def readPuck(): Option[Puck] = {
     if (readBoolean()) {
       Some(new Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readLong(), readLong()))
+        readDouble(), readDouble(), longToId(readLong()), longToId(readLong())))
     } else {
       None
     }

@@ -9,8 +9,8 @@ package model
  * @param y Возвращает Y-координату центра объекта. Ось ординат направлена свеху вниз.
  * @param speedX Возвращает X-составляющую скорости объекта. Ось абсцисс направлена слева направо.
  * @param speedY Возвращает Y-составляющую скорости объекта. Ось ординат направлена свеху вниз.
- * @param ownerHockeyistId Возвращает идентификатор хоккеиста, контролирующего шайбу, или `-1`.
- * @param ownerPlayerId Возвращает идентификатор игрока, контролирующего шайбу, или `-1`.
+ * @param ownerHockeyistId Возвращает идентификатор хоккеиста, контролирующего шайбу, или `None`.
+ * @param ownerPlayerId Возвращает идентификатор игрока, контролирующего шайбу, или `None`.
  */
 class Puck(id: Long,
            mass: Double,
@@ -19,6 +19,6 @@ class Puck(id: Long,
            y: Double,
            speedX: Double,
            speedY: Double,
-           val ownerHockeyistId: Long,
-           val ownerPlayerId: Long)
+           val ownerHockeyistId: Option[Long],
+           val ownerPlayerId: Option[Long])
   extends Unit(id, mass, radius, x, y, speedX, speedY, 0.0D, 0.0D)

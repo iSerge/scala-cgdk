@@ -43,13 +43,12 @@ object MyStrategy {
 }
 
 class MyStrategy extends Strategy {
-
   def move(self: Hockeyist, world: World, game: Game, move: Move): Unit = {
     (self.state, world.puck) match {
       case (Some(HockeyistState.Swinging), _) => move.action = ActionType.Strike
       case (_, Some(puck)) =>
-        if (puck.ownerPlayerId == self.playerId) {
-          if (puck.ownerHockeyistId == self.id) {
+        if (puck.ownerPlayerId.contains(self.playerId)) {
+          if (puck.ownerHockeyistId.contains(self.id)) {
             drivePuck(self, world, game, move)
           } else {
             strikeNearestOpponent(self, world, game, move)
