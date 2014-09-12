@@ -185,7 +185,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   private def writeBoolean(value: Boolean): Unit = {
-    writeBytes(Array[Byte](if (value) 1.asInstanceOf[Byte] else 0.asInstanceOf[Byte]))
+    writeBytes(Array[Byte](if (value) 1 else 0))
   }
 
   private def readInt(): Int = {
