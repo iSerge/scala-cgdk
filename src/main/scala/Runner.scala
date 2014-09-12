@@ -14,14 +14,14 @@ final class Runner(args: Array[String]) {
 
       var playerContext = remoteProcessClient.readPlayerContext()
       while (None != playerContext) {
-        val playerHockeyists = playerContext.get.getHockeyists
+        val playerHockeyists = playerContext.get.hockeyists
 
         if (playerHockeyists.length == teamSize) {
           val moves = List.fill(teamSize){new Move()}
           playerHockeyists.zip(moves).foreach( {
             case (Some(hockeyist), move) =>
-              val world = playerContext.flatMap(_.getWorld)
-              strategies(hockeyist.getTeammateIndex).move(hockeyist, world.orNull, game.orNull, move)
+              val world = playerContext.flatMap(_.world)
+              strategies(hockeyist.teammateIndex).move(hockeyist, world.orNull, game.orNull, move)
             case _ =>
           })
           remoteProcessClient.writeMoves(moves)
