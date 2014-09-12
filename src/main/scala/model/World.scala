@@ -13,12 +13,12 @@ package model
  *                   вызвавшей этот метод. После каждого тика объекты, задающие хоккеистов, пересоздаются.
  * @param puck Возвращает шайбу.
  */
-class World(val tick: Int, 
-            val tickCount: Int, 
-            val width: Double, 
+class World(val tick: Int,
+            val tickCount: Int,
+            val width: Double,
             val height: Double,
-            val players: Vector[Option[Player]], 
-            val hockeyists: Vector[Option[Hockeyist]], 
+            val players: Vector[Option[Player]],
+            val hockeyists: Vector[Option[Hockeyist]],
             val puck: Option[Puck]) {
 
   /**

@@ -5,10 +5,10 @@ package model
  */
 class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
                 radius: Double, x: Double, y: Double, speedX: Double, speedY: Double,
-                angle: Double, angularSpeed: Double, teammate: Boolean, hokeyistType: HockeyistType,
+                angle: Double, angularSpeed: Double, teammate: Boolean, hokeyistType: Option[HockeyistType],
                 strength: Int, endurance: Int, dexterity: Int, agility: Int, stamina: Double,
-                state: HockeyistState, originalPositionIndex: Int, remainingKnockdownTicks: Int,
-                remainingCooldownTicks: Int, swingTicks: Int, lastAction: ActionType,
+                state: Option[HockeyistState], originalPositionIndex: Int, remainingKnockdownTicks: Int,
+                remainingCooldownTicks: Int, swingTicks: Int, lastAction: Option[ActionType],
                 lastActionTick: Option[Integer])
   extends Unit(id, mass, radius, x, y, speedX, speedY, angle, angularSpeed) {
 
@@ -30,7 +30,7 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
   /**
    * @return Возвращает тип хоккеиста.
    */
-  def getType: HockeyistType = hokeyistType
+  def getType: Option[HockeyistType] = hokeyistType
 
   /**
    * @return Возвращает значение атрибута сила.
@@ -60,7 +60,7 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
   /**
    * @return Возвращает состояние хоккеиста.
    */
-  def getState: HockeyistState = state
+  def getState: Option[HockeyistState] = state
 
   /**
    * @return Возвращает индекс исходной позиции хоккеиста или `1` для вратаря или хоккеиста,
@@ -92,7 +92,7 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
    * @return Возвращает последнее действие ([[model.Move#setAction]]), совершённое хоккеистом,
    *         или [[model.ActionType.None]] в случае, если хоккеист ещё не совершил ни одного действия.
    */
-  def getLastAction: ActionType = lastAction
+  def getLastAction: Option[ActionType] = lastAction
 
   /**
    * @return Возвращает номер тика, в который хоккеист совершил своё последние действие ([[model.Move#setAction]]),

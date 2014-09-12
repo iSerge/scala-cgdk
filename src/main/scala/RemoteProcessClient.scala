@@ -1,16 +1,15 @@
-import java.io.{IOException, UnsupportedEncodingException, ByteArrayOutputStream, Closeable}
+import java.io.{ByteArrayOutputStream, Closeable, IOException, UnsupportedEncodingException}
 import java.net.Socket
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.nio.{ByteBuffer, ByteOrder}
 
-import model.{ActionType, Move, PlayerContext, Game, World, Player, HockeyistType, HockeyistState, Hockeyist, Puck}
+import model.{ActionType, Game, Hockeyist, HockeyistState, HockeyistType, Move, Player, PlayerContext, Puck, World}
+import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, MessageType, ProtocolByteOrder,
+                            actionTypeFromByte, actionTypeToByte, ensureMessageType,
+                            hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
 
-import scala.annotation.{tailrec, switch}
+import scala.annotation.{switch, tailrec}
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
-
-  import RemoteProcessClient._
-
   private val (socket, inputStream, outputStream) = {
     val socket = {
       val skt = new Socket(host, port)
@@ -43,31 +42,30 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   def readGameContext(): Option[Game] = {
     ensureMessageType(readEnum(messageTypeFromByte), MessageType.GameContext)
 
-    if (readBoolean())
-    {
-      Some(new Game(readLong(), readInt(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
-        readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
-        readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
-        readInt(), readDouble(), readDouble())
-      )
+    if (readBoolean()) {
+      Some(new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(), readInt(), readInt(),
+        readInt(), readInt(), readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(),
+        readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
+        readInt(), readInt(), readDouble(), readDouble()))
+    } else {
+      None
     }
-    else None
   }
 
   def readPlayerContext(): Option[PlayerContext] = {
     readEnum(messageTypeFromByte) match {
       case MessageType.GameOver => None
       case MessageType.PlayerContext =>
-        if (readBoolean()) Some(new PlayerContext(readHockeyists(), readWorld()))
-        else None
+        if (readBoolean()) {
+          Some(new PlayerContext(readHockeyists, readWorld))
+        } else {
+          None
+        }
       case msgType: Any => throw new IllegalArgumentException(s"Received wrong message: $msgType.")
     }
   }
@@ -100,45 +98,54 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   def close(): Unit = socket.close()
 
-  private def readWorld(): Option[World] = {
-    if (readBoolean())
-    {
-      Some(new World(readInt(), readInt(), readDouble(), readDouble(),
-        readPlayers(), readHockeyists(), readPuck()))
+  private def readWorld: Option[World] = {
+    if (readBoolean()) {
+      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists, readPuck()))
+    } else {
+      None
     }
-    else None
   }
 
   private def readPlayers(): Vector[Option[Player]] = {
     val playerCount: Int = readInt()
 
     Vector.fill(playerCount) {
-      if (readBoolean()) Some(new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
-        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readBoolean(), readBoolean()))
-      else None
+      if (readBoolean()) {
+        Some(new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
+          readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+          readBoolean(), readBoolean()))
+      } else {
+        None
+      }
     }
   }
 
-  private def readHockeyists(): Vector[Option[Hockeyist]] = {
+  private def readHockeyists: Vector[Option[Hockeyist]] = {
     val hockeyistCount: Int = readInt()
-
-    Vector.fill(hockeyistCount) { readHockeyist() }
+    Vector.fill(hockeyistCount) {
+      readHockeyist()
+    }
   }
 
   private def readHockeyist(): Option[Hockeyist] = {
-    if (readBoolean()) Some(new Hockeyist(readLong(), readLong(), readInt(), readDouble(),
-      readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-      readBoolean(), readEnum(hockeyistTypeFromByte), readInt(), readInt(), readInt(), readInt(),
-      readDouble(), readEnum(hockeyistStateFromByte), readInt(), readInt(), readInt(), readInt(),
-      readEnum(actionTypeFromByte), if (readBoolean()) Some(readInt()) else None))
-    else None
+    if (readBoolean()) {
+      Some(new Hockeyist(readLong(), readLong(), readInt(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readBoolean(), readEnum(hockeyistTypeFromByte), readInt(), readInt(), readInt(), readInt(),
+        readDouble(), readEnum(hockeyistStateFromByte), readInt(), readInt(), readInt(), readInt(),
+        readEnum(actionTypeFromByte), if (readBoolean()) Some(readInt()) else None))
+    } else {
+      None
+    }
   }
 
   private def readPuck(): Option[Puck] = {
-    if (readBoolean()) Some(new Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
-      readDouble(), readDouble(), readLong(), readLong()))
-    else None
+    if (readBoolean()) {
+      Some(new Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readLong(), readLong()))
+    } else {
+      None
+    }
   }
 
   private def readEnum[E](fromByte: Byte => E): E = fromByte(readBytes(1)(0))
@@ -148,9 +155,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private def readString(): Option[String] = {
     try {
       val length: Int = readInt()
-
-      if (length == -1) None
-      else Some(new String(readBytes(length), "UTF-8"))
+      if (length == -1) {
+        None
+      } else {
+        Some(new String(readBytes(length), "UTF-8"))
+      }
     } catch {
       case e: UnsupportedEncodingException =>
         throw new IllegalArgumentException("UTF-8 is unsupported.", e)
@@ -202,20 +211,28 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private def writeDouble(value: Double): Unit = {
     writeLong(java.lang.Double.doubleToLongBits(value))
   }
-  
+
   private def readBytes(byteCount: Int): Array[Byte] = {
-    def result(bytes: Array[Byte], offset: Int) = {
-      if (offset == byteCount) bytes
-      else throw new IOException(s"Can't read $byteCount bytes from input stream.")
+    def result(bytes: Array[Byte], offset: Int): Array[Byte] = {
+      if (offset == byteCount) {
+        bytes
+      } else {
+        throw new IOException(s"Can't read $byteCount bytes from input stream.")
+      }
     }
 
     @tailrec
     def rb(offset: Int = 0, bytes: Array[Byte] = new Array[Byte](byteCount)): Array[Byte] = {
       if (offset < byteCount) {
         val readByteCount = inputStream.read(bytes, offset, byteCount - offset)
-        if (readByteCount != -1) rb(offset + readByteCount)
-        else result(bytes, offset)
-      } else result(bytes, offset)
+        if (readByteCount != -1) {
+          rb(offset + readByteCount)
+        } else {
+          result(bytes, offset)
+        }
+      } else {
+        result(bytes, offset)
+      }
     }
     rb()
   }
@@ -229,25 +246,17 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     outputStreamBuffer.reset()
     outputStream.flush()
   }
-
-  private def ensureMessageType(actualType: Option[MessageType], expectedType: MessageType): Boolean =
-    ensureMessageType(actualType.orNull, expectedType)
-
-  private def ensureMessageType(actualType: MessageType, expectedType: MessageType): Boolean =
-    if (actualType != expectedType)
-      throw new IllegalArgumentException(s"Received wrong message [actual=$actualType, expected=$expectedType].")
-    else true
 }
 
-object RemoteProcessClient{
-  private val BufferSizeBytes: Int = 1 << 20
-  private val ProtocolByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN
-  private val IntegerSizeBytes: Int = Integer.SIZE / java.lang.Byte.SIZE
-  private val LongSizeBytes: Int = java.lang.Long.SIZE / java.lang.Byte.SIZE
+object RemoteProcessClient {
+  private[RemoteProcessClient] val BufferSizeBytes: Int = 1 << 20
+  private[RemoteProcessClient] val ProtocolByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN
+  private[RemoteProcessClient] val IntegerSizeBytes: Int = Integer.SIZE / java.lang.Byte.SIZE
+  private[RemoteProcessClient] val LongSizeBytes: Int = java.lang.Long.SIZE / java.lang.Byte.SIZE
 
   sealed trait MessageType
 
-  object MessageType{
+  object MessageType {
     case object Unknown extends MessageType
     case object GameOver extends MessageType
     case object AuthenticationToken extends MessageType
@@ -256,78 +265,81 @@ object RemoteProcessClient{
     case object GameContext extends MessageType
     case object PlayerContext extends MessageType
     case object Moves extends MessageType
-
   }
+
+  private[RemoteProcessClient] def ensureMessageType(actualType: Option[MessageType], expectedType: MessageType): Boolean =
+    ensureMessageType(actualType.orNull, expectedType)
+
+  private[RemoteProcessClient] def ensureMessageType(actualType: MessageType, expectedType: MessageType): Boolean =
+    if (actualType != expectedType) {
+      throw new IllegalArgumentException(s"Received wrong message [actual=$actualType, expected=$expectedType].")
+    } else {
+      true
+    }
 
   // scalastyle:off magic.number
-  import MessageType._
-  def messageTypeToByte(value: MessageType):Byte = value match {
-    case Unknown             => 0
-    case GameOver            => 1
-    case AuthenticationToken => 2
-    case TeamSize            => 3
-    case ProtocolVersion     => 4
-    case GameContext         => 5
-    case PlayerContext       => 6
-    case Moves               => 7
-    case _                   => -1
-  }
+  def messageTypeToByte(value: MessageType): Byte = value match {
+      case MessageType.Unknown             => 0
+      case MessageType.GameOver            => 1
+      case MessageType.AuthenticationToken => 2
+      case MessageType.TeamSize            => 3
+      case MessageType.ProtocolVersion     => 4
+      case MessageType.GameContext         => 5
+      case MessageType.PlayerContext       => 6
+      case MessageType.Moves               => 7
+      case _                               => -1
+    }
 
   def messageTypeFromByte(value: Byte): MessageType = (value: @switch) match {
-    case 0 => Unknown
-    case 1 => GameOver
-    case 2 => AuthenticationToken
-    case 3 => TeamSize
-    case 4 => ProtocolVersion
-    case 5 => GameContext
-    case 6 => PlayerContext
-    case 7 => Moves
-    case _ => null
+      case 0 => MessageType.Unknown
+      case 1 => MessageType.GameOver
+      case 2 => MessageType.AuthenticationToken
+      case 3 => MessageType.TeamSize
+      case 4 => MessageType.ProtocolVersion
+      case 5 => MessageType.GameContext
+      case 6 => MessageType.PlayerContext
+      case 7 => MessageType.Moves
+      case _ => throw new IllegalArgumentException(s"value: $value")
+    }
+  // scalastyle:on magic.number
+
+  // scalastyle:off magic.number
+  private[RemoteProcessClient] def hockeyistTypeFromByte(value: Byte): Option[HockeyistType] = (value: @switch) match {
+    case 0 => Some(HockeyistType.Goalie)
+    case 1 => Some(HockeyistType.Versatile)
+    case 2 => Some(HockeyistType.Forward)
+    case 3 => Some(HockeyistType.Defenceman)
+    case 4 => Some(HockeyistType.Random)
+    case _ => None
   }
 
-  import HockeyistType._
-
-  private def hockeyistTypeFromByte(value: Byte): HockeyistType = (value: @switch) match {
-    case 0 => Goalie
-    case 1 => Versatile
-    case 2 => Forward
-    case 3 => Defenceman
-    case 4 => Random
-    case _ => null
+  private[RemoteProcessClient] def hockeyistStateFromByte(value: Byte): Option[HockeyistState] = (value: @switch) match {
+    case 0 => Some(HockeyistState.Active)
+    case 1 => Some(HockeyistState.Swinging)
+    case 2 => Some(HockeyistState.KnockedDown)
+    case 3 => Some(HockeyistState.Resting)
+    case _ => None
   }
 
-  import HockeyistState._
-
-  private def hockeyistStateFromByte(value: Byte): HockeyistState = (value: @switch) match {
-    case 0 => Active
-    case 1 => Swinging
-    case 2 => KnockedDown
-    case 3 => Resting
-    case _ => null
+  private[RemoteProcessClient] def actionTypeFromByte(value: Byte): Option[ActionType] = (value: @switch) match {
+    case 0 => Some(ActionType.None)
+    case 1 => Some(ActionType.TakePuck)
+    case 2 => Some(ActionType.Swing)
+    case 3 => Some(ActionType.Strike)
+    case 4 => Some(ActionType.CancelStrike)
+    case 5 => Some(ActionType.Pass)
+    case 6 => Some(ActionType.Substitute)
+    case _ => None
   }
 
-  import ActionType._
-
-  private def actionTypeFromByte(value: Byte): ActionType = (value: @switch) match {
-    case 0 => None
-    case 1 => TakePuck
-    case 2 => Swing
-    case 3 => Strike
-    case 4 => CancelStrike
-    case 5 => Pass
-    case 6 => Substitute
-    case _ => null
-  }
-
-  private def actionTypeToByte(value: ActionType): Byte = value match {
-    case None         => 0
-    case TakePuck     => 1
-    case Swing        => 2
-    case Strike       => 3
-    case CancelStrike => 4
-    case Pass         => 5
-    case Substitute   => 6
-    case _            => -1
+  private[RemoteProcessClient] def actionTypeToByte(value: ActionType): Byte = value match {
+    case ActionType.None => 0
+    case ActionType.TakePuck => 1
+    case ActionType.Swing => 2
+    case ActionType.Strike => 3
+    case ActionType.CancelStrike => 4
+    case ActionType.Pass => 5
+    case ActionType.Substitute => 6
   }
   // scalastyle:on magic.number
 }
