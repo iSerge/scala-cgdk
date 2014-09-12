@@ -21,7 +21,7 @@ final class Runner(args: Array[String]) {
           playerHockeyists.zip(moves).foreach( {
             case (Some(hockeyist), move) =>
               val world = playerContext.flatMap(_.world)
-              strategies(hockeyist.getTeammateIndex).move(hockeyist, world.orNull, game.orNull, move)
+              strategies(hockeyist.teammateIndex).move(hockeyist, world.orNull, game.orNull, move)
             case _ =>
           })
           remoteProcessClient.writeMoves(moves)
