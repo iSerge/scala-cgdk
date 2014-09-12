@@ -4,58 +4,28 @@ import java.lang.StrictMath.{PI, atan2, hypot}
 
 /**
  * Базовый класс для определения объектов (''юнитов'') на игровом поле.
+ * @param id Возвращает уникальный идентификатор объекта.
+ * @param mass Возвращает массу объекта в единицах массы.
+ * @param radius Возвращает радиус объекта.
+ * @param x Возвращает X-координату центра объекта. Ось абсцисс направлена слева направо.
+ * @param y Возвращает Y-координату центра объекта. Ось ординат направлена свеху вниз.
+ * @param speedX Возвращает X-составляющую скорости объекта. Ось абсцисс направлена слева направо.
+ * @param speedY Возвращает Y-составляющую скорости объекта. Ось ординат направлена свеху вниз.
+ * @param angle Возвращает угол поворота объекта в радианах. Нулевой угол соответствует направлению оси абсцисс.
+ *              Положительные значения соответствуют повороту по часовой стрелке.
+ * @param angularSpeed Возвращает скорость вращения объекта.
+ *                     Положительные значения соответствуют вращению по часовой стрелке.
  */
-abstract class Unit (id: Long, mass: Double, radius: Double,
-                     x: Double, y: Double, speedX: Double, speedY: Double,
-                     angle: Double, angularSpeed: Double)
+abstract class Unit (val id: Long,
+                     val mass: Double,
+                     val radius: Double,
+                     val x: Double,
+                     val y: Double,
+                     val speedX: Double,
+                     val speedY: Double,
+                     val angle: Double,
+                     val angularSpeed: Double)
 {
-  /**
-   * @return Возвращает уникальный идентификатор объекта.
-   */
-  def getId: Long = id
-
-  /**
-   * @return Возвращает массу объекта в единицах массы.
-   */
-  def getMass: Double = mass
-
-  /**
-   * @return Возвращает радиус объекта.
-   */
-  def getRadius: Double = radius
-
-  /**
-   * @return Возвращает X-координату центра объекта. Ось абсцисс направлена слева направо.
-   */
-  final def getX: Double = x
-
-  /**
-   * @return Возвращает Y-координату центра объекта. Ось ординат направлена свеху вниз.
-   */
-  final def getY: Double = y
-
-  /**
-   * @return Возвращает X-составляющую скорости объекта. Ось абсцисс направлена слева направо.
-   */
-  final def getSpeedX: Double = speedX
-
-  /**
-   * @return Возвращает Y-составляющую скорости объекта. Ось ординат направлена свеху вниз.
-   */
-  final def getSpeedY: Double = speedY
-
-  /**
-   * @return Возвращает угол поворота объекта в радианах. Нулевой угол соответствует направлению оси абсцисс.
-   *         Положительные значения соответствуют повороту по часовой стрелке.
-   */
-  final def getAngle: Double = angle
-
-  /**
-   * @return Возвращает скорость вращения объекта.
-   *         Положительные значения соответствуют вращению по часовой стрелке.
-   */
-  def getAngularSpeed: Double = angularSpeed
-
   /**
    * @param x X-координата точки.
    * @param y Y-координата точки.
@@ -82,7 +52,7 @@ abstract class Unit (id: Long, mass: Double, radius: Double,
    * @return Возвращает ориентированный угол `[-PI, PI]` между направлением
    *         данного объекта и вектором из центра данного объекта к центру указанного объекта.
    */
-  def getAngleTo(unit: Unit): Double = getAngleTo(unit.getX, unit.getY)
+  def getAngleTo(unit: Unit): Double = getAngleTo(unit.x, unit.y)
 
   /**
    * @param x X-координата точки.
@@ -95,6 +65,6 @@ abstract class Unit (id: Long, mass: Double, radius: Double,
    * @param unit Объект, до центра которого необходимо определить расстояние.
    * @return Возвращает расстояние от центра данного объекта до центра указанного объекта.
    */
-  def getDistanceTo(unit: Unit): Double = getDistanceTo(unit.getX, unit.getY)
+  def getDistanceTo(unit: Unit): Double = getDistanceTo(unit.x, unit.y)
 }
 
