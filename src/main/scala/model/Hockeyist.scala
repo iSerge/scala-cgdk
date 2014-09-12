@@ -65,5 +65,3 @@ class Hockeyist(id: Long,
                 val lastAction: Option[ActionType],
                 val lastActionTick: Option[Integer])
   extends Unit(id, mass, radius, x, y, speedX, speedY, angle, angularSpeed)
-{}
-
