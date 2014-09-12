@@ -42,15 +42,15 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     ensureMessageType(readEnum(messageTypeFromByte), MessageType.GameContext)
 
     if (readBoolean()) {
-      Some(new Game(readLong, readInt, readDouble, readDouble, readDouble, readDouble,
-        readDouble, readDouble, readDouble, readDouble, readDouble, readInt, readInt, readInt, readInt,
-        readInt, readInt, readDouble, readDouble, readDouble, readInt, readDouble, readDouble, readDouble,
-        readDouble, readDouble, readDouble, readInt, readDouble, readDouble, readDouble, readDouble,
-        readDouble, readDouble, readDouble, readDouble, readDouble, readDouble, readDouble, readDouble,
-        readDouble, readDouble, readDouble, readDouble, readDouble, readDouble, readDouble, readDouble,
-        readDouble, readDouble, readDouble, readDouble, readDouble, readDouble, readInt, readInt,
-        readInt, readInt, readInt, readInt, readInt, readInt, readInt, readInt, readInt, readInt,
-        readInt, readInt, readDouble, readDouble))
+      Some(new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(), readInt(), readInt(),
+        readInt(), readInt(), readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(),
+        readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
+        readInt(), readInt(), readDouble(), readDouble()))
     } else {
       None
     }
@@ -99,7 +99,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def readWorld: Option[World] = {
     if (readBoolean()) {
-      Some(new World(readInt, readInt, readDouble, readDouble, readPlayers, readHockeyists, readPuck))
+      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists, readPuck()))
     } else {
       None
     }
@@ -120,9 +120,9 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   private def readHockeyists: Vector[Option[Hockeyist]] = {
-    val hockeyistCount: Int = readInt
+    val hockeyistCount: Int = readInt()
     Vector.fill(hockeyistCount) {
-      readHockeyist
+      readHockeyist()
     }
   }
 
