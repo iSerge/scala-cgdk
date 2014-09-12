@@ -22,5 +22,3 @@ class Puck(id: Long,
            val ownerHockeyistId: Long,
            val ownerPlayerId: Long)
   extends Unit(id, mass, radius, x, y, speedX, speedY, 0.0D, 0.0D)
-{}
-

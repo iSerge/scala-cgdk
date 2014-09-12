@@ -67,4 +67,3 @@ abstract class Unit (val id: Long,
    */
   def getDistanceTo(unit: Unit): Double = getDistanceTo(unit.x, unit.y)
 }
-
