@@ -7,7 +7,7 @@ import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, Me
                             actionTypeFromByte, actionTypeToByte, ensureMessageType,
                             hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
 
-import scala.annotation.{switch, tailrec}
+import scala.annotation.switch
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val (socket, inputStream, outputStream) = {
@@ -62,7 +62,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
       case MessageType.GameOver => None
       case MessageType.PlayerContext =>
         if (readBoolean()) {
-          Some(new PlayerContext(readHockeyists, readWorld))
+          Some(new PlayerContext(readHockeyists(), readWorld()))
         } else {
           None
         }
@@ -98,9 +98,9 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   def close(): Unit = socket.close()
 
-  private def readWorld: Option[World] = {
+  private def readWorld(): Option[World] = {
     if (readBoolean()) {
-      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists, readPuck()))
+      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck()))
     } else {
       None
     }
@@ -120,7 +120,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
-  private def readHockeyists: Vector[Option[Hockeyist]] = {
+  private def readHockeyists(): Vector[Option[Hockeyist]] = {
     val hockeyistCount: Int = readInt()
     Vector.fill(hockeyistCount) {
       readHockeyist()
