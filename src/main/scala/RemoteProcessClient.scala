@@ -3,12 +3,13 @@ import java.net.Socket
 import java.nio.{ByteBuffer, ByteOrder}
 
 import model.{ActionType, Game, Hockeyist, HockeyistState, HockeyistType, Move, Player, PlayerContext, Puck, World}
+import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, MessageType, ProtocolByteOrder,
+                            actionTypeFromByte, actionTypeToByte, ensureMessageType,
+                            hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
 
 import scala.annotation.{switch, tailrec}
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
-  import RemoteProcessClient._
-
   private val (socket, inputStream, outputStream) = {
     val socket = {
       val skt = new Socket(host, port)
@@ -277,37 +278,29 @@ object RemoteProcessClient {
     }
 
   // scalastyle:off magic.number
-  def messageTypeToByte(value: MessageType): Byte = {
-    import MessageType._
-    
-    value match {
-      case Unknown             => 0
-      case GameOver            => 1
-      case AuthenticationToken => 2
-      case TeamSize            => 3
-      case ProtocolVersion     => 4
-      case GameContext         => 5
-      case PlayerContext       => 6
-      case Moves               => 7
-      case _                   => -1
+  def messageTypeToByte(value: MessageType): Byte = value match {
+      case MessageType.Unknown             => 0
+      case MessageType.GameOver            => 1
+      case MessageType.AuthenticationToken => 2
+      case MessageType.TeamSize            => 3
+      case MessageType.ProtocolVersion     => 4
+      case MessageType.GameContext         => 5
+      case MessageType.PlayerContext       => 6
+      case MessageType.Moves               => 7
+      case _                               => -1
     }
-  }
 
-  def messageTypeFromByte(value: Byte): MessageType = {
-    import MessageType._
-    
-    (value: @switch) match {
-      case 0 => Unknown
-      case 1 => GameOver
-      case 2 => AuthenticationToken
-      case 3 => TeamSize
-      case 4 => ProtocolVersion
-      case 5 => GameContext
-      case 6 => PlayerContext
-      case 7 => Moves
-      case _ => null
+  def messageTypeFromByte(value: Byte): MessageType = (value: @switch) match {
+      case 0 => MessageType.Unknown
+      case 1 => MessageType.GameOver
+      case 2 => MessageType.AuthenticationToken
+      case 3 => MessageType.TeamSize
+      case 4 => MessageType.ProtocolVersion
+      case 5 => MessageType.GameContext
+      case 6 => MessageType.PlayerContext
+      case 7 => MessageType.Moves
+      case _ => throw new IllegalArgumentException(s"value: $value")
     }
-  }
   // scalastyle:on magic.number
 
   // scalastyle:off magic.number
