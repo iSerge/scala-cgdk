@@ -1,11 +1,9 @@
-import model._
-import java.lang.StrictMath.PI
+import model.{World, Hockeyist, Game, Move, ActionType}
 
 final class MyStrategy extends Strategy {
-  def move(self: Hockeyist, world: Option[World], game: Option[Game], move: Move) {
+  override def move(self: Hockeyist, world: Option[World], game: Option[Game], move: Move): Unit = {
     move.setSpeedUp(-1.0D)
-    move.setTurn(PI)
-    move.setAction(ActionType.STRIKE)
+    move.setTurn(math.Pi)
+    move.setAction(ActionType.Strike)
   }
 }
-

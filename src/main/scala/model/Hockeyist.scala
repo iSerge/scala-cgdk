@@ -10,8 +10,7 @@ class Hockeyist(id: Long, playerId: Long, teammateIndex: Int, mass: Double,
                 state: Option[HockeyistState], originalPositionIndex: Int, remainingKnockdownTicks: Int,
                 remainingCooldownTicks: Int, swingTicks: Int, lastAction: Option[ActionType],
                 lastActionTick: Option[Integer])
-  extends Unit(id, mass, radius, x, y, speedX, speedY, angle, angularSpeed)
-{
+  extends Unit(id, mass, radius, x, y, speedX, speedY, angle, angularSpeed) {
 
   /**
    * @return Возвращает идентификатор игрока, в команду которого входит хоккеист.

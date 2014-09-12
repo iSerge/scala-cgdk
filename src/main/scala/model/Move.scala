@@ -6,7 +6,7 @@ package model
 class Move {
   private var speedUp: Double = .0
   private var turn: Double = .0
-  private var action: ActionType = ActionType.NONE
+  private var action: ActionType = ActionType.None
   private var passPower: Double = 1.0D
   private var passAngle: Double = .0
   private var teammateIndex: Int = -1

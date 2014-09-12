@@ -17,7 +17,7 @@ object ActionType {
   /**
    * Ничего не делать.
    */
-  case object NONE extends ActionType
+  case object None extends ActionType
 
   /**
    * Взять шайбу.
@@ -28,7 +28,7 @@ object ActionType {
    * В противном случае хоккеист попытается установить контроль над шайбой и, с определённой вероятностью,
    * это сделает ((смотрите документацию к {@code game.pickUpPuckBaseChance} и {@code game.takePuckAwayBaseChance})).
    */
-  case object TAKE_PUCK extends ActionType
+  case object TakePuck extends ActionType
 
   /**
    * Замахнуться для удара.
@@ -37,7 +37,7 @@ object ActionType {
    * тем большее воздействие будет на попавшие под удар объекты. Максимальное количество учитываемых тиков ограничено
    * значением {@code game.maxEffectiveSwingTicks}.
    */
-  case object SWING extends ActionType
+  case object Swing extends ActionType
 
   /**
    * Ударить.
@@ -48,7 +48,7 @@ object ActionType {
    * Объекты (шайба и хоккеисты, кроме вратарей), попавшие под удар, приобретут некоторый импульс в направлении,
    * совпадающим с направлением удара. При ударе по хоккеисту есть также некоторый шанс сбить его с ног.
    */
-  case object STRIKE extends ActionType
+  case object Strike extends ActionType
 
   /**
    * Отменить удар.
@@ -59,7 +59,7 @@ object ActionType {
    * <p/>
    * Если хоккеист не совершает замах клюшкой, то действие игнорируется.
    */
-  case object CANCEL_STRIKE extends ActionType
+  case object CancelStrike extends ActionType
 
   /**
    * Отдать пас.
@@ -70,7 +70,7 @@ object ActionType {
    * <p/>
    * Если хоккеист не контролирует шайбу, то действие игнорируется.
    */
-  case object PASS extends ActionType
+  case object Pass extends ActionType
 
   /**
    * Заменить активного хоккеиста сидящим на скамейке запасных.
@@ -82,5 +82,5 @@ object ActionType {
    * Если указан некорректный индекс, или скорость хоккеиста превышает {@code game.maxSpeedToAllowSubstitute},
    * то действие будет проигнорировано.
    */
-  case object SUBSTITUTE extends ActionType
+  case object Substitute extends ActionType
 }

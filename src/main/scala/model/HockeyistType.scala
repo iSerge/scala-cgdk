@@ -22,12 +22,12 @@ object HockeyistType {
    * <p/>
    * Вратарь единственный среди хоккеистов взаимодействует с шайбой напрямую (как физический объект).
    */
-  case object GOALIE extends HockeyistType
+  case object Goalie extends HockeyistType
 
   /**
    * Хоккеист со сбалансированными параметрами.
    */
-  case object VERSATILE extends HockeyistType
+  case object Versatile extends HockeyistType
 
   /**
    * Нападающий.
@@ -35,7 +35,7 @@ object HockeyistType {
    * Хоккеист, основным достоинством которого является сила удара.
    * Его слабой стороной является стойкость.
    */
-  case object FORWARD extends HockeyistType
+  case object Forward extends HockeyistType
 
   /**
    * Защитник.
@@ -43,12 +43,12 @@ object HockeyistType {
    * Хоккеист, основным достоинством которого является стойкость.
    * Его слабой стороной является точность удара.
    */
-  case object DEFENCEMAN extends HockeyistType
+  case object Defenceman extends HockeyistType
 
   /**
    * Хоккеист со случайными параметрами.
    */
-  case object RANDOM extends HockeyistType
+  case object Random extends HockeyistType
 }
 
 

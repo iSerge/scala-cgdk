@@ -1,7 +1,4 @@
-import model.Game
-import model.Hockeyist
-import model.Move
-import model.World
+import model.{Game, Hockeyist, Move, World}
 
 /**
  * Стратегия --- интерфейс, содержащий описание методов искусственного интеллекта хоккеиста.
@@ -18,5 +15,5 @@ trait Strategy {
    * @param game  Различные игровые константы.
    * @param move  Результатом работы метода является изменение полей данного объекта.
    */
-  def move(self: Hockeyist, world: Option[World], game: Option[Game], move: Move)
+  def move(self: Hockeyist, world: Option[World], game: Option[Game], move: Move): Unit
 }

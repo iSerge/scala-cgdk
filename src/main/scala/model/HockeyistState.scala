@@ -9,7 +9,7 @@ object HockeyistState{
   /**
    * Хоккеист находится на игровом поле.
    */
-  case object ACTIVE extends HockeyistState
+  case object Active extends HockeyistState
 
   /**
    * Хоккеист находится на игровом поле и делает замах клюшкой.
@@ -17,17 +17,17 @@ object HockeyistState{
    * Во время замаха стратегия не может управлять движением хоккеиста, а из действий доступны только
    * {@code ActionType.STRIKE} и {@code ActionType.CANCEL_STRIKE}.
    */
-  case object SWINGING extends HockeyistState
+  case object Swinging extends HockeyistState
 
   /**
    * Хоккеист находится на игровом поле, но сбит с ног.
    * Стратегия игрока не может им управлять.
    */
-  case object KNOCKED_DOWN extends HockeyistState
+  case object KnockedDown extends HockeyistState
 
   /**
    * Хоккеист отдыхает вне игрового поля.
    * Стратегия игрока не может им управлять.
    */
-  case object RESTING extends HockeyistState
+  case object Resting extends HockeyistState
 }
