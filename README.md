@@ -19,10 +19,10 @@ import model.{Hockeyist, World, Game, Move, ActionType, HockeyistType, Hockeyist
 
 object MyStrategy {
   private def getNearestOpponent(x: Double, y: Double, world: World): Option[Hockeyist] = {
-    val hockeists = world.getHockeyists.collect({
+    val hockeists = world.hockeyists.collect({
       case Some(hockeyist) if !hockeyist.isTeammate && hockeyist.getType != HockeyistType.Goalie
         && hockeyist.getState != HockeyistState.KnockedDown && hockeyist.getState != HockeyistState.Resting
-        => hockeyist
+      => hockeyist
     })
 
     hockeists match {
@@ -39,7 +39,7 @@ class MyStrategy extends Strategy {
   import MyStrategy.{STRIKE_ANGLE, getNearestOpponent}
 
   def move(self: Hockeyist, world: World, game: Game, move: Move) = {
-    (self.getState, world.getPuck) match {
+    (self.getState, world.puck) match {
       case (HockeyistState.Swinging, _) => move.setAction(ActionType.Strike)
       case (_, Some(puck)) =>
         if (puck.getOwnerPlayerId == self.getPlayerId) {
@@ -75,7 +75,7 @@ class MyStrategy extends Strategy {
 
   private def drivePuck(self: Hockeyist, world: World, game: Game, move: Move) {
     val Some((netX, netY)) = for {
-      opponentPlayer <- world.getOpponentPlayer
+      opponentPlayer <- world.opponentPlayer
       netX = 0.5D * (opponentPlayer.getNetBack + opponentPlayer.getNetFront)
       netY = {
         val ny = 0.5D * (opponentPlayer.getNetBottom + opponentPlayer.getNetTop)
