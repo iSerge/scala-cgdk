@@ -1,5 +1,7 @@
 package model
 
+import CanBeEmpty.CanBeEmptyOps
+
 /**
  * Этот класс описывает игровой мир. Содержит также описания всех игроков и игровых объектов (<<юнитов>>).
  * @param tick Возвращает номер текущего тика.
@@ -17,19 +19,19 @@ class World(val tick: Int,
             val tickCount: Int,
             val width: Double,
             val height: Double,
-            val players: Vector[Option[Player]],
+            val players: Vector[Player],
             val hockeyists: Vector[Hockeyist],
             val puck: Puck) {
 
   /**
    * @return Возвращает вашего игрока.
    */
-  lazy val myPlayer: Option[Player] = players.collectFirst { case Some(p) if p.me => p }
+  lazy val myPlayer: Option[Player] = players.find { p => p.isDefined && p.me }
 
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  lazy val opponentPlayer: Option[Player] = players.collectFirst { case Some(p) if !p.me => p }
+  lazy val opponentPlayer: Option[Player] = players.find { p => p.isDefined && !p.me }
 }
 
 object World extends CanBeEmpty[World]

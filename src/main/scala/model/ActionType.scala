@@ -85,4 +85,9 @@ object ActionType {
    * то действие будет проигнорировано.
    */
   case object Substitute extends ActionType
+
+  /**
+   * Ни одно из известных действий.
+   */
+  case object Unknown extends ActionType
 }

@@ -30,7 +30,7 @@ package model
  */
 class Player(val id: Long,
              val me: Boolean,
-             val name: Option[String],
+             val name: String,
              val goalCount: Int,
              val strategyCrashed: Boolean,
              val netTop: Double,
@@ -41,3 +41,5 @@ class Player(val id: Long,
              val netBack: Double,
              val justScoredGoal: Boolean,
              val justMissedGoal: Boolean)
+
+object Player extends CanBeEmpty[Player]

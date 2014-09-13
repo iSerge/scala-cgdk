@@ -21,23 +21,21 @@ final class Runner(args: Array[String]) {
       val strategies = Array.fill(teamSize) { new MyStrategy() }
 
       @tailrec
-      def iteratePlayerContext(playerContextOpt: Option[PlayerContext]): Unit = playerContextOpt match {
-        case None =>
-        case Some(playerContext) =>
-          val playerHockeyists = playerContext.hockeyists
+      def iteratePlayerContext(playerContext: PlayerContext): Unit = if (playerContext.isDefined) {
+        val playerHockeyists = playerContext.hockeyists
 
-          if (playerHockeyists.length == teamSize) {
-            val moves = List.fill(teamSize) { new Move() }
-            playerHockeyists.zip(moves).foreach {
-              case (hockeyist, move) if hockeyist.isDefined &&
-                                        playerContext.world.isDefined &&
-                                        playerContext.world.puck.isDefined =>
-                strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game, move)
-              case _ =>
-            }
-            remoteProcessClient.writeMoves(moves)
+        if (playerHockeyists.length == teamSize) {
+          val moves = List.fill(teamSize) { new Move() }
+          playerHockeyists.zip(moves).foreach {
+            case (hockeyist, move) if hockeyist.isDefined &&
+                                      playerContext.world.isDefined &&
+                                      playerContext.world.puck.isDefined =>
+              strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game, move)
+            case _ =>
           }
-          iteratePlayerContext(remoteProcessClient.readPlayerContext())
+          remoteProcessClient.writeMoves(moves)
+        }
+        iteratePlayerContext(remoteProcessClient.readPlayerContext())
       }
       iteratePlayerContext(remoteProcessClient.readPlayerContext())
     } finally {
