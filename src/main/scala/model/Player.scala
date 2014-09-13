@@ -30,7 +30,7 @@ package model
  */
 class Player(val id: Long,
              val me: Boolean,
-             val name: Option[String],
+             val name: String,
              val goalCount: Int,
              val strategyCrashed: Boolean,
              val netTop: Double,

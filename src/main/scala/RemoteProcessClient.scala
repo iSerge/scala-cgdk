@@ -142,14 +142,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def writeEnum[E](value: E, toByte: E => Byte): Unit = writeBytes(Array(toByte(value)))
 
-  private def readString(): Option[String] = {
+  private def readString(): String = {
     try {
       val length: Int = readInt()
-      if (length == -1) {
-        None
-      } else {
-        Some(new String(readBytes(length), "UTF-8"))
-      }
+      if (length == -1) { "" }
+      else { new String(readBytes(length), "UTF-8") }
     } catch {
       case e: UnsupportedEncodingException =>
         throw new IllegalArgumentException("UTF-8 is unsupported.", e)
