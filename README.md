@@ -83,7 +83,7 @@ class MyStrategy extends Strategy {
       netX = 0.5D * (opponentPlayer.netBack + opponentPlayer.netFront)
       netY = {
         val ny = 0.5D * (opponentPlayer.netBottom + opponentPlayer.netTop)
-        (if (self.y < ny) 0.5D else -0.5D) * game.goalNetHeight
+        ny + ((if (self.y < ny) 0.5D else -0.5D) * game.goalNetHeight)
       }
     } yield (netX, netY)
 
