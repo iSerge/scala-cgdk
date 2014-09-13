@@ -29,8 +29,9 @@ final class Runner(args: Array[String]) {
           if (playerHockeyists.length == teamSize) {
             val moves = List.fill(teamSize) { new Move() }
             playerHockeyists.zip(moves).foreach {
-              case (Some(hockeyist), move) if playerContext.world.isDefined &&
-                                              playerContext.world.puck.isDefined =>
+              case (hockeyist, move) if hockeyist.isDefined &&
+                                        playerContext.world.isDefined &&
+                                        playerContext.world.puck.isDefined =>
                 strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game, move)
               case _ =>
             }
