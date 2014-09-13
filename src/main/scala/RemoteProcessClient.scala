@@ -22,12 +22,14 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
   private val outputStreamBuffer = new ByteArrayOutputStream(BufferSizeBytes)
 
+  @scala.inline
   def writeToken(token: String): Unit = {
     writeByte(messageTypeToByte(MessageType.AuthenticationToken))
     writeString(token)
     flush()
   }
 
+  @scala.inline
   def readTeamSize(): Int = {
     ensureMessageType(messageTypeFromByte(readByte()), MessageType.TeamSize)
     readInt()
@@ -126,6 +128,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     } else { Hockeyist.empty }
   }
 
+  @scala.inline
   private def longToId(v: Long): Option[Long] = if (-1 == v) None else Some(v)
 
   private def readPuck(): Puck = {
@@ -157,44 +160,53 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
+  @scala.inline
   private def readBoolean(): Boolean = readByte() != 0
 
+  @scala.inline
   private def readBooleanArray(count: Int): Array[Boolean] = {
     val bytes: Array[Byte] = readBytes(count)
     bytes.map(0 != _)
   }
 
+  @scala.inline
   private def writeBoolean(value: Boolean): Unit = {
     writeBytes(Array[Byte](if (value) 1 else 0))
   }
 
+  @scala.inline
   private def readInt(): Int = {
     ByteBuffer.wrap(readBytes(IntegerSizeBytes)).order(ProtocolByteOrder).getInt
   }
 
+  @scala.inline
   private def writeInt(value: Int): Unit = {
     writeBytes(ByteBuffer.allocate(IntegerSizeBytes).order(ProtocolByteOrder).putInt(value).array)
   }
 
+  @scala.inline
   private def readLong(): Long = {
     ByteBuffer.wrap(readBytes(LongSizeBytes)).order(ProtocolByteOrder).getLong
   }
 
+  @scala.inline
   private def writeLong(value: Long): Unit = {
     writeBytes(ByteBuffer.allocate(LongSizeBytes).order(ProtocolByteOrder).putLong(value).array)
   }
 
+  @scala.inline
   private def readDouble(): Double = {
     java.lang.Double.longBitsToDouble(readLong())
   }
 
+  @scala.inline
   private def writeDouble(value: Double): Unit = {
     writeLong(java.lang.Double.doubleToLongBits(value))
   }
 
   private def readBytes(byteCount: Int): Array[Byte] = {
     def result(bytes: Array[Byte], offset: Int): Array[Byte] = {
-      if (offset == byteCount) { bytes } 
+      if (offset == byteCount) { bytes }
       else { throw new IOException(s"Can't read $byteCount bytes from input stream.") }
     }
 
@@ -210,10 +222,13 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     rb(0, new Array[Byte](byteCount))
   }
 
+  @scala.inline
   private def readByte(): Byte = readBytes(1)(0)
 
+  @scala.inline
   private def writeBytes(bytes: Array[Byte]): Unit = outputStreamBuffer.write(bytes)
 
+  @scala.inline
   private def writeByte(byte: Byte): Unit = outputStreamBuffer.write(Array(byte))
 
   private def flush(): Unit = {
@@ -242,6 +257,7 @@ object RemoteProcessClient {
     case object Moves extends MessageType
   }
 
+  @scala.inline
   private[RemoteProcessClient] def ensureMessageType(actualType: MessageType, expectedType: MessageType): Boolean =
     if (actualType != expectedType) {
       throw new IllegalArgumentException(s"Received wrong message [actual=$actualType, expected=$expectedType].")
