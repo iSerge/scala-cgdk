@@ -246,9 +246,6 @@ object RemoteProcessClient {
     case object Moves extends MessageType
   }
 
-  private[RemoteProcessClient] def ensureMessageType(actualType: Option[MessageType], expectedType: MessageType): Boolean =
-    ensureMessageType(actualType.orNull, expectedType)
-
   private[RemoteProcessClient] def ensureMessageType(actualType: MessageType, expectedType: MessageType): Boolean =
     if (actualType != expectedType) {
       throw new IllegalArgumentException(s"Received wrong message [actual=$actualType, expected=$expectedType].")
