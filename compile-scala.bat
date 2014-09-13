@@ -1,7 +1,7 @@
 @echo off
 for %%X in (scalac.bat) do (set SCALA_FOUND=%%~$PATH:X)
 
-if not exist "%SCALA_HOME%\scala-library.jar" (
+if not exist "%SCALA_HOME%\lib\scala-library.jar" (
     echo Unable to find 'scala-library.jar' in SCALA_HOME ["%SCALA_HOME%"]
     exit 1
 )
@@ -19,7 +19,7 @@ if not exist src\main\scala\MyStrategy.scala (
 rd /Q /S classes
 md classes
 
-scalac -encoding UTF-8 -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" > compilation.log
+call scalac -encoding UTF-8 -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" > compilation.log
 
 if not exist classes\Runner.class (
     echo Unable to find classes\Runner.class >> compilation.log
