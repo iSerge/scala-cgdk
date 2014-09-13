@@ -41,3 +41,5 @@ class Player(val id: Long,
              val netBack: Double,
              val justScoredGoal: Boolean,
              val justMissedGoal: Boolean)
+
+object Player extends CanBeEmpty[Player]

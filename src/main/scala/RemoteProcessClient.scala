@@ -100,17 +100,15 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     } else { World.empty }
   }
 
-  private def readPlayers(): Vector[Option[Player]] = {
+  private def readPlayers(): Vector[Player] = {
     val playerCount: Int = readInt()
 
     Vector.fill(playerCount) {
       if (readBoolean()) {
-        Some(new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
+        new Player(readLong(), readBoolean(), readString(), readInt(), readBoolean(),
           readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-          readBoolean(), readBoolean()))
-      } else {
-        None
-      }
+          readBoolean(), readBoolean())
+      } else { Player.empty }
     }
   }
 
