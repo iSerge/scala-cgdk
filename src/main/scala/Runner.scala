@@ -12,8 +12,13 @@ final class Runner(args: Array[String]) {
       remoteProcessClient.writeToken(token)
       val teamSize = remoteProcessClient.readTeamSize()
       remoteProcessClient.writeProtocolVersion()
-      val game = remoteProcessClient.readGameContext()
-      val strategies = Array.fill(teamSize) {new MyStrategy()}
+      val game = {
+        val g = remoteProcessClient.readGameContext()
+        if (g.isEmpty) { throw new NullPointerException(s"game: $g") }
+        g
+      }
+
+      val strategies = Array.fill(teamSize) { new MyStrategy() }
 
       @tailrec
       def iteratePlayerContext(playerContextOpt: Option[PlayerContext]): Unit = playerContextOpt match {
@@ -26,7 +31,7 @@ final class Runner(args: Array[String]) {
             playerHockeyists.zip(moves).foreach {
               case (Some(hockeyist), move) if playerContext.world.isDefined &&
                                               playerContext.world.puck.isDefined =>
-                strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game.orNull, move)
+                strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game, move)
               case _ =>
             }
             remoteProcessClient.writeMoves(moves)

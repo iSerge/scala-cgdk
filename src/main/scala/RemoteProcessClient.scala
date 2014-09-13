@@ -40,11 +40,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     flush()
   }
 
-  def readGameContext(): Option[Game] = {
+  def readGameContext(): Game = {
     ensureMessageType(readEnum(messageTypeFromByte), MessageType.GameContext)
 
     if (readBoolean()) {
-      Some(new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+      new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(), readInt(), readInt(),
         readInt(), readInt(), readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
@@ -52,10 +52,8 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(),
         readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
-        readInt(), readInt(), readDouble(), readDouble()))
-    } else {
-      None
-    }
+        readInt(), readInt(), readDouble(), readDouble())
+    } else { Game.empty }
   }
 
   def readPlayerContext(): Option[PlayerContext] = {
@@ -97,7 +95,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   def close(): Unit = socket.close()
 
   private def readWorld(): World = {
-    if (readBoolean()) { 
+    if (readBoolean()) {
       new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck())
     } else { World.empty }
   }
