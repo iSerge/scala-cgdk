@@ -268,47 +268,48 @@ object RemoteProcessClient {
       case 5 => MessageType.GameContext
       case 6 => MessageType.PlayerContext
       case 7 => MessageType.Moves
-      case _ => throw new IllegalArgumentException(s"value: $value")
+      case _ => throw new IllegalArgumentException("messageTypeFromByte: " + value)
     }
   // scalastyle:on magic.number
 
   // scalastyle:off magic.number
-  private[RemoteProcessClient] def hockeyistTypeFromByte(value: Byte): Option[HockeyistType] = (value: @switch) match {
-    case 0 => Some(HockeyistType.Goalie)
-    case 1 => Some(HockeyistType.Versatile)
-    case 2 => Some(HockeyistType.Forward)
-    case 3 => Some(HockeyistType.Defenceman)
-    case 4 => Some(HockeyistType.Random)
-    case _ => None
+  private[RemoteProcessClient] def hockeyistTypeFromByte(value: Byte): HockeyistType = (value: @switch) match {
+    case 0 => HockeyistType.Goalie
+    case 1 => HockeyistType.Versatile
+    case 2 => HockeyistType.Forward
+    case 3 => HockeyistType.Defenceman
+    case 4 => HockeyistType.Random
+    case _ => throw new IllegalArgumentException("hockeyistTypeFromByte: " + value)
   }
 
-  private[RemoteProcessClient] def hockeyistStateFromByte(value: Byte): Option[HockeyistState] = (value: @switch) match {
-    case 0 => Some(HockeyistState.Active)
-    case 1 => Some(HockeyistState.Swinging)
-    case 2 => Some(HockeyistState.KnockedDown)
-    case 3 => Some(HockeyistState.Resting)
-    case _ => None
+  private[RemoteProcessClient] def hockeyistStateFromByte(value: Byte): HockeyistState = (value: @switch) match {
+    case 0 => HockeyistState.Active
+    case 1 => HockeyistState.Swinging
+    case 2 => HockeyistState.KnockedDown
+    case 3 => HockeyistState.Resting
+    case _ => throw new IllegalArgumentException("hockeyistStateFromByte:" + value)
   }
 
-  private[RemoteProcessClient] def actionTypeFromByte(value: Byte): Option[ActionType] = (value: @switch) match {
-    case 0 => Some(ActionType.None)
-    case 1 => Some(ActionType.TakePuck)
-    case 2 => Some(ActionType.Swing)
-    case 3 => Some(ActionType.Strike)
-    case 4 => Some(ActionType.CancelStrike)
-    case 5 => Some(ActionType.Pass)
-    case 6 => Some(ActionType.Substitute)
-    case _ => None
+  private[RemoteProcessClient] def actionTypeFromByte(value: Byte): ActionType = (value: @switch) match {
+    case 0 => ActionType.None
+    case 1 => ActionType.TakePuck
+    case 2 => ActionType.Swing
+    case 3 => ActionType.Strike
+    case 4 => ActionType.CancelStrike
+    case 5 => ActionType.Pass
+    case 6 => ActionType.Substitute
+    case _ => ActionType.Unknown
   }
 
   private[RemoteProcessClient] def actionTypeToByte(value: ActionType): Byte = value match {
-    case ActionType.None => 0
-    case ActionType.TakePuck => 1
-    case ActionType.Swing => 2
-    case ActionType.Strike => 3
+    case ActionType.None         => 0
+    case ActionType.TakePuck     => 1
+    case ActionType.Swing        => 2
+    case ActionType.Strike       => 3
     case ActionType.CancelStrike => 4
-    case ActionType.Pass => 5
-    case ActionType.Substitute => 6
+    case ActionType.Pass         => 5
+    case ActionType.Substitute   => 6
+    case ActionType.Unknown      => -1
   }
   // scalastyle:on magic.number
 }
