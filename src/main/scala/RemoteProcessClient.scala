@@ -4,8 +4,8 @@ import java.nio.{ByteBuffer, ByteOrder}
 
 import model.{ActionType, Game, Hockeyist, HockeyistState, HockeyistType, Move, Player, PlayerContext, Puck, World}
 import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, MessageType, ProtocolByteOrder,
-                            actionTypeFromByte, actionTypeToByte, ensureMessageType,
-                            hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
+                            actionTypeFromByte, actionTypeToInt, ensureMessageType,
+                            hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToInt}
 
 import scala.annotation.{tailrec, switch}
 
@@ -24,7 +24,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   @scala.inline
   def writeToken(token: String): Unit = {
-    writeByte(messageTypeToByte(MessageType.AuthenticationToken))
+    writeByte(messageTypeToInt(MessageType.AuthenticationToken))
     writeString(token)
     flush()
   }
@@ -36,7 +36,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   def writeProtocolVersion(): Unit = {
-    writeByte(messageTypeToByte(MessageType.ProtocolVersion))
+    writeByte(messageTypeToInt(MessageType.ProtocolVersion))
     writeInt(1)
     flush()
   }
@@ -68,7 +68,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   def writeMoves(moves: List[Move]): Unit = {
-    writeByte(messageTypeToByte(MessageType.Moves))
+    writeByte(messageTypeToInt(MessageType.Moves))
 
     if (moves.isEmpty) {
       writeInt(-1)
@@ -79,7 +79,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         writeBoolean(value = true)
         writeDouble(move.speedUp)
         writeDouble(move.turn)
-        writeByte(actionTypeToByte(move.action))
+        writeByte(actionTypeToInt(move.action))
         move.action match {
           case ActionType.Pass =>
             writeDouble(move.passPower)
@@ -232,7 +232,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private def writeBytes(bytes: Array[Byte]): Unit = outputStreamBuffer.write(bytes)
 
   @scala.inline
-  private def writeByte(byte: Byte): Unit = outputStreamBuffer.write(Array(byte))
+  private def writeByte(byte: Int): Unit = outputStreamBuffer.write(byte)
 
   private def flush(): Unit = {
     outputStream.write(outputStreamBuffer.toByteArray)
@@ -269,17 +269,17 @@ object RemoteProcessClient {
     }
 
   // scalastyle:off magic.number
-  def messageTypeToByte(value: MessageType): Byte = value match {
-      case MessageType.Unknown             => 0
-      case MessageType.GameOver            => 1
-      case MessageType.AuthenticationToken => 2
-      case MessageType.TeamSize            => 3
-      case MessageType.ProtocolVersion     => 4
-      case MessageType.GameContext         => 5
-      case MessageType.PlayerContext       => 6
-      case MessageType.Moves               => 7
-      case _                               => -1
-    }
+  def messageTypeToInt(value: MessageType): Int = value match {
+    case MessageType.Unknown             => 0
+    case MessageType.GameOver            => 1
+    case MessageType.AuthenticationToken => 2
+    case MessageType.TeamSize            => 3
+    case MessageType.ProtocolVersion     => 4
+    case MessageType.GameContext         => 5
+    case MessageType.PlayerContext       => 6
+    case MessageType.Moves               => 7
+    case _                               => -1
+  }
 
   def messageTypeFromByte(value: Byte): MessageType = (value: @switch) match {
       case 0 => MessageType.Unknown
@@ -323,7 +323,7 @@ object RemoteProcessClient {
     case _ => ActionType.Unknown
   }
 
-  private[RemoteProcessClient] def actionTypeToByte(value: ActionType): Byte = value match {
+  private[RemoteProcessClient] def actionTypeToInt(value: ActionType): Int = value match {
     case ActionType.None         => 0
     case ActionType.TakePuck     => 1
     case ActionType.Swing        => 2
