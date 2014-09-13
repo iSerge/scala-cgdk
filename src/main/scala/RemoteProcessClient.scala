@@ -8,6 +8,7 @@ import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, Me
                             hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
 
 import scala.annotation.switch
+import model.CanBeEmpty.CanBeEmptyOps
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val (socket, inputStream, outputStream) = {

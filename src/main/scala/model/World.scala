@@ -24,10 +24,11 @@ class World(val tick: Int,
   /**
    * @return Возвращает вашего игрока.
    */
-  lazy val myPlayer: Option[Player] = players.collectFirst({case Some(p) if p.me => p})
+  lazy val myPlayer: Option[Player] = players.collectFirst { case Some(p) if p.me => p }
 
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  lazy val opponentPlayer: Option[Player] = players.collectFirst({case Some(p) if !p.me => p})
+  lazy val opponentPlayer: Option[Player] = players.collectFirst { case Some(p) if !p.me => p }
 }
+
