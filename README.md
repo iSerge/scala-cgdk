@@ -26,16 +26,16 @@ import MyStrategy.{StrikeAngle, getNearestOpponent}
 
 object MyStrategy {
   private def getNearestOpponent(x: Double, y: Double, world: World): Option[Hockeyist] = {
-    val hockeists = world.hockeyists.collect({
-      case Some(hockeyist) if !hockeyist.teammate && hockeyist.hokeyistType.orNull != HockeyistType.Goalie
-        && hockeyist.state.orNull != HockeyistState.KnockedDown && hockeyist.state.orNull != HockeyistState.Resting
+    val hockeyists = world.hockeyists.collect({
+      case hockeyist if !hockeyist.teammate && !hockeyist.hokeyistType.contains(HockeyistType.Goalie)
+        && !hockeyist.state.contains(HockeyistState.KnockedDown) && !hockeyist.state.contains(HockeyistState.Resting)
       => hockeyist
     })
 
-    if (hockeists.isEmpty) {
+    if (hockeyists.isEmpty) {
       None
     } else {
-      Some(hockeists.minBy { hockeyist => math.hypot(x - hockeyist.x, y - hockeyist.y)})
+      Some(hockeyists.minBy { hockeyist => math.hypot(x - hockeyist.x, y - hockeyist.y)})
     }
   }
 
@@ -44,17 +44,17 @@ object MyStrategy {
 
 class MyStrategy extends Strategy {
   def move(self: Hockeyist, world: World, game: Game, move: Move): Unit = {
-    (self.state, world.puck) match {
-      case (Some(HockeyistState.Swinging), _) => move.action = ActionType.Strike
-      case (_, Some(puck)) =>
-        if (puck.ownerPlayerId.contains(self.playerId)) {
-          if (puck.ownerHockeyistId.contains(self.id)) {
+    self.state match {
+      case Some(HockeyistState.Swinging) => move.action = ActionType.Strike
+      case _ =>
+        if (world.puck.ownerPlayerId.contains(self.playerId)) {
+          if (world.puck.ownerHockeyistId.contains(self.id)) {
             drivePuck(self, world, game, move)
           } else {
             strikeNearestOpponent(self, world, game, move)
           }
         } else {
-          moveToPuck(self, puck, move)
+          moveToPuck(self, world.puck, move)
         }
       case _ =>
     }
