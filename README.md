@@ -27,8 +27,8 @@ import MyStrategy.{StrikeAngle, getNearestOpponent}
 object MyStrategy {
   private def getNearestOpponent(x: Double, y: Double, world: World): Option[Hockeyist] = {
     val hockeyists = world.hockeyists.collect({
-      case hockeyist if !hockeyist.teammate && !hockeyist.hokeyistType.contains(HockeyistType.Goalie)
-        && !hockeyist.state.contains(HockeyistState.KnockedDown) && !hockeyist.state.contains(HockeyistState.Resting)
+      case hockeyist if !hockeyist.teammate && hockeyist.hokeyistType != HockeyistType.Goalie
+        && hockeyist.state != HockeyistState.KnockedDown && hockeyist.state != HockeyistState.Resting
       => hockeyist
     })
 
@@ -45,7 +45,7 @@ object MyStrategy {
 class MyStrategy extends Strategy {
   def move(self: Hockeyist, world: World, game: Game, move: Move): Unit = {
     self.state match {
-      case Some(HockeyistState.Swinging) => move.action = ActionType.Strike
+      case HockeyistState.Swinging => move.action = ActionType.Strike
       case _ =>
         if (world.puck.ownerPlayerId.contains(self.playerId)) {
           if (world.puck.ownerHockeyistId.contains(self.id)) {
@@ -56,7 +56,6 @@ class MyStrategy extends Strategy {
         } else {
           moveToPuck(self, world.puck, move)
         }
-      case _ =>
     }
   }
 
