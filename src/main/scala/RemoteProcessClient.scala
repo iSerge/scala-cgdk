@@ -8,6 +8,7 @@ import RemoteProcessClient.{BufferSizeBytes, IntegerSizeBytes, LongSizeBytes, Me
                             hockeyistStateFromByte, hockeyistTypeFromByte, messageTypeFromByte, messageTypeToByte}
 
 import scala.annotation.switch
+import model.CanBeEmpty.CanBeEmptyOps
 
 final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val (socket, inputStream, outputStream) = {
@@ -39,11 +40,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     flush()
   }
 
-  def readGameContext(): Option[Game] = {
+  def readGameContext(): Game = {
     ensureMessageType(readEnum(messageTypeFromByte), MessageType.GameContext)
 
     if (readBoolean()) {
-      Some(new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
+      new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(), readInt(), readInt(),
         readInt(), readInt(), readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
@@ -51,21 +52,16 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readInt(), readInt(),
         readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(), readInt(),
-        readInt(), readInt(), readDouble(), readDouble()))
-    } else {
-      None
-    }
+        readInt(), readInt(), readDouble(), readDouble())
+    } else { Game.empty }
   }
 
   def readPlayerContext(): Option[PlayerContext] = {
     readEnum(messageTypeFromByte) match {
       case MessageType.GameOver => None
       case MessageType.PlayerContext =>
-        if (readBoolean()) {
-          Some(new PlayerContext(readHockeyists(), readWorld()))
-        } else {
-          None
-        }
+        if (readBoolean()) { Some(new PlayerContext(readHockeyists(), readWorld())) }
+        else { None }
       case msgType: Any => throw new IllegalArgumentException(s"Received wrong message: $msgType.")
     }
   }
@@ -98,12 +94,10 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   def close(): Unit = socket.close()
 
-  private def readWorld(): Option[World] = {
+  private def readWorld(): World = {
     if (readBoolean()) {
-      Some(new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck()))
-    } else {
-      None
-    }
+      new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck())
+    } else { World.empty }
   }
 
   private def readPlayers(): Vector[Option[Player]] = {
@@ -141,13 +135,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   private def longToId(v: Long): Option[Long] = if (-1 == v) None else Some(v)
 
-  private def readPuck(): Option[Puck] = {
+  private def readPuck(): Puck = {
     if (readBoolean()) {
-      Some(new Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readDouble(), readDouble(), longToId(readLong()), longToId(readLong())))
-    } else {
-      None
-    }
+      Puck(readLong(), readDouble(), readDouble(), readDouble(), readDouble(),
+        readDouble(), readDouble(), longToId(readLong()), longToId(readLong()))
+    } else { Puck.empty }
   }
 
   private def readEnum[E](fromByte: Byte => E): E = fromByte(readBytes(1)(0))
@@ -253,9 +245,6 @@ object RemoteProcessClient {
     case object PlayerContext extends MessageType
     case object Moves extends MessageType
   }
-
-  private[RemoteProcessClient] def ensureMessageType(actualType: Option[MessageType], expectedType: MessageType): Boolean =
-    ensureMessageType(actualType.orNull, expectedType)
 
   private[RemoteProcessClient] def ensureMessageType(actualType: MessageType, expectedType: MessageType): Boolean =
     if (actualType != expectedType) {

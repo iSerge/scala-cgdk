@@ -19,15 +19,17 @@ class World(val tick: Int,
             val height: Double,
             val players: Vector[Option[Player]],
             val hockeyists: Vector[Option[Hockeyist]],
-            val puck: Option[Puck]) {
+            val puck: Puck) {
 
   /**
    * @return Возвращает вашего игрока.
    */
-  lazy val myPlayer: Option[Player] = players.collectFirst({case Some(p) if p.me => p})
+  lazy val myPlayer: Option[Player] = players.collectFirst { case Some(p) if p.me => p }
 
   /**
    * @return Возвращает игрока, соревнующегося с вами.
    */
-  lazy val opponentPlayer: Option[Player] = players.collectFirst({case Some(p) if !p.me => p})
+  lazy val opponentPlayer: Option[Player] = players.collectFirst { case Some(p) if !p.me => p }
 }
+
+object World extends CanBeEmpty[World]

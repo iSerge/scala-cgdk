@@ -208,3 +208,5 @@ class Game(val randomSeed: Long,
            val maxRandomHockeyistParameter: Int,
            val struckPuckInitialSpeedFactor: Double,
            val puckBindingRange: Double)
+
+object Game extends CanBeEmpty[Game]
