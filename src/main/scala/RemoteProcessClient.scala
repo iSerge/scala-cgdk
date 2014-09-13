@@ -222,8 +222,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     rb(0, new Array[Byte](byteCount))
   }
 
-  @scala.inline
-  private def readByte(): Byte = readBytes(1)(0)
+  private def readByte(): Byte = {
+    val byte = inputStream.read()
+    if (byte == -1) { throw new IOException(s"Can't read 1 bytes from input stream.") }
+    else { byte.asInstanceOf[Byte] }
+  }
 
   @scala.inline
   private def writeBytes(bytes: Array[Byte]): Unit = outputStreamBuffer.write(bytes)
