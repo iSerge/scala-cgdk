@@ -24,24 +24,24 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   private val outputStreamBuffer = new ByteArrayOutputStream(BufferSizeBytes)
 
   def writeToken(token: String): Unit = {
-    writeEnum(MessageType.AuthenticationToken, messageTypeToByte)
+    writeByte(messageTypeToByte(MessageType.AuthenticationToken))
     writeString(token)
     flush()
   }
 
   def readTeamSize(): Int = {
-    ensureMessageType(readEnum(messageTypeFromByte), MessageType.TeamSize)
+    ensureMessageType(messageTypeFromByte(readByte()), MessageType.TeamSize)
     readInt()
   }
 
   def writeProtocolVersion(): Unit = {
-    writeEnum(MessageType.ProtocolVersion, messageTypeToByte)
+    writeByte(messageTypeToByte(MessageType.ProtocolVersion))
     writeInt(1)
     flush()
   }
 
   def readGameContext(): Game = {
-    ensureMessageType(readEnum(messageTypeFromByte), MessageType.GameContext)
+    ensureMessageType(messageTypeFromByte(readByte()), MessageType.GameContext)
 
     if (readBoolean()) {
       new Game(readLong(), readInt(), readDouble(), readDouble(), readDouble(), readDouble(),
@@ -57,7 +57,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   def readPlayerContext(): PlayerContext = {
-    readEnum(messageTypeFromByte) match {
+    messageTypeFromByte(readByte()) match {
       case MessageType.GameOver => PlayerContext.empty
       case MessageType.PlayerContext =>
         if (readBoolean()) { new PlayerContext(readHockeyists(), readWorld()) }
@@ -67,7 +67,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
   }
 
   def writeMoves(moves: List[Move]): Unit = {
-    writeEnum(MessageType.Moves, messageTypeToByte)
+    writeByte(messageTypeToByte(MessageType.Moves))
 
     if (moves.isEmpty) {
       writeInt(-1)
@@ -78,7 +78,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         writeBoolean(value = true)
         writeDouble(move.speedUp)
         writeDouble(move.turn)
-        writeEnum(move.action, actionTypeToByte)
+        writeByte(actionTypeToByte(move.action))
         move.action match {
           case ActionType.Pass =>
             writeDouble(move.passPower)
@@ -121,9 +121,9 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     if (readBoolean()) {
       new Hockeyist(readLong(), readLong(), readInt(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
-        readBoolean(), readEnum(hockeyistTypeFromByte), readInt(), readInt(), readInt(), readInt(),
-        readDouble(), readEnum(hockeyistStateFromByte), readInt(), readInt(), readInt(), readInt(),
-        readEnum(actionTypeFromByte), if (readBoolean()) Some(readInt()) else None)
+        readBoolean(), hockeyistTypeFromByte(readByte()), readInt(), readInt(), readInt(), readInt(),
+        readDouble(), hockeyistStateFromByte(readByte()), readInt(), readInt(), readInt(), readInt(),
+        actionTypeFromByte(readByte()), if (readBoolean()) Some(readInt()) else None)
     } else { Hockeyist.empty }
   }
 
@@ -135,10 +135,6 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
         readDouble(), readDouble(), longToId(readLong()), longToId(readLong()))
     } else { Puck.empty }
   }
-
-  private def readEnum[E](fromByte: Byte => E): E = fromByte(readBytes(1)(0))
-
-  private def writeEnum[E](value: E, toByte: E => Byte): Unit = writeBytes(Array(toByte(value)))
 
   private def readString(): String = {
     try {
@@ -162,7 +158,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
-  private def readBoolean(): Boolean = readBytes(1)(0) != 0
+  private def readBoolean(): Boolean = readByte() != 0
 
   private def readBooleanArray(count: Int): Array[Boolean] = {
     val bytes: Array[Byte] = readBytes(count)
@@ -207,9 +203,11 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     bytes
   }
 
-  private def writeBytes(bytes: Array[Byte]): Unit = {
-    outputStreamBuffer.write(bytes)
-  }
+  private def readByte(): Byte = readBytes(1)(0)
+
+  private def writeBytes(bytes: Array[Byte]): Unit = outputStreamBuffer.write(bytes)
+
+  private def writeByte(byte: Byte): Unit = outputStreamBuffer.write(Array(byte))
 
   private def flush(): Unit = {
     outputStream.write(outputStreamBuffer.toByteArray)
