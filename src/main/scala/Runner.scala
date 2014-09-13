@@ -1,4 +1,7 @@
-import model.Move
+import model.{PlayerContext, Move}
+import model.CanBeEmpty.CanBeEmptyOps
+
+import scala.annotation.tailrec
 
 final class Runner(args: Array[String]) {
   private val remoteProcessClient = new RemoteProcessClient(args(0), Integer.parseInt(args(1)))
@@ -12,22 +15,25 @@ final class Runner(args: Array[String]) {
       val game = remoteProcessClient.readGameContext()
       val strategies = Array.fill(teamSize) {new MyStrategy()}
 
-      var playerContext = remoteProcessClient.readPlayerContext()
-      while (None != playerContext) {
-        val playerHockeyists = playerContext.get.hockeyists
+      @tailrec
+      def iteratePlayerContext(playerContextOpt: Option[PlayerContext]): Unit = playerContextOpt match {
+        case None =>
+        case Some(playerContext) =>
+          val playerHockeyists = playerContext.hockeyists
 
-        if (playerHockeyists.length == teamSize) {
-          val moves = List.fill(teamSize){new Move()}
-          playerHockeyists.zip(moves).foreach( {
-            case (Some(hockeyist), move) =>
-              val world = playerContext.flatMap(_.world)
-              strategies(hockeyist.teammateIndex).move(hockeyist, world.orNull, game.orNull, move)
-            case _ =>
-          })
-          remoteProcessClient.writeMoves(moves)
-        }
-        playerContext = remoteProcessClient.readPlayerContext()
+          if (playerHockeyists.length == teamSize) {
+            val moves = List.fill(teamSize) { new Move() }
+            playerHockeyists.zip(moves).foreach {
+              case (Some(hockeyist), move) if playerContext.world.isDefined &&
+                                              playerContext.world.puck.isDefined =>
+                strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game.orNull, move)
+              case _ =>
+            }
+            remoteProcessClient.writeMoves(moves)
+          }
+          iteratePlayerContext(remoteProcessClient.readPlayerContext())
       }
+      iteratePlayerContext(remoteProcessClient.readPlayerContext())
     } finally {
       remoteProcessClient.close()
     }
@@ -37,11 +43,8 @@ final class Runner(args: Array[String]) {
 object Runner {
   def main(args: Array[String]): Unit = {
     val params =
-      if (args.length == 3) {
-        args
-      } else {
-        Array("127.0.0.1", "31001", "0000000000000000")
-      }
+      if (args.length == 3) { args }
+      else { Array("127.0.0.1", "31001", "0000000000000000") }
     new Runner(params).run()
   }
 }

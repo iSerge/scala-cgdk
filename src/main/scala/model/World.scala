@@ -32,3 +32,4 @@ class World(val tick: Int,
   lazy val opponentPlayer: Option[Player] = players.collectFirst { case Some(p) if !p.me => p }
 }
 
+object World extends CanBeEmpty[World]

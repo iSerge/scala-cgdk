@@ -62,11 +62,8 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     readEnum(messageTypeFromByte) match {
       case MessageType.GameOver => None
       case MessageType.PlayerContext =>
-        if (readBoolean()) {
-          Some(new PlayerContext(readHockeyists(), readWorld()))
-        } else {
-          None
-        }
+        if (readBoolean()) { Some(new PlayerContext(readHockeyists(), readWorld())) }
+        else { None }
       case msgType: Any => throw new IllegalArgumentException(s"Received wrong message: $msgType.")
     }
   }
@@ -99,12 +96,10 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
 
   def close(): Unit = socket.close()
 
-  private def readWorld(): Option[World] = {
-    if (readBoolean()) {
-      val world = new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck())
-      if (world.puck.isDefined) { Some(world) }
-      else { None }
-    } else { None }
+  private def readWorld(): World = {
+    if (readBoolean()) { 
+      new World(readInt(), readInt(), readDouble(), readDouble(), readPlayers(), readHockeyists(), readPuck())
+    } else { World.empty }
   }
 
   private def readPlayers(): Vector[Option[Player]] = {
