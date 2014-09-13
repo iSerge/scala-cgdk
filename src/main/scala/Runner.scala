@@ -25,13 +25,10 @@ final class Runner(args: Array[String]) {
         val playerHockeyists = playerContext.hockeyists
 
         if (playerHockeyists.length == teamSize) {
-          val moves = List.fill(teamSize) { new Move() }
-          playerHockeyists.zip(moves).foreach {
-            case (hockeyist, move) if hockeyist.isDefined &&
-                                      playerContext.world.isDefined &&
-                                      playerContext.world.puck.isDefined =>
-              strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game, move)
-            case _ =>
+          val moves = playerHockeyists.map { hockeyist =>
+            if (hockeyist.isDefined && playerContext.world.isDefined && playerContext.world.puck.isDefined) {
+              strategies(hockeyist.teammateIndex).move(hockeyist, playerContext.world, game)
+            } else { Move() }
           }
           remoteProcessClient.writeMoves(moves)
         }
