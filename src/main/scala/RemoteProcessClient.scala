@@ -114,23 +114,19 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
-  private def readHockeyists(): Vector[Option[Hockeyist]] = {
+  private def readHockeyists(): Vector[Hockeyist] = {
     val hockeyistCount: Int = readInt()
-    Vector.fill(hockeyistCount) {
-      readHockeyist()
-    }
+    Vector.fill(hockeyistCount) { readHockeyist() }
   }
 
-  private def readHockeyist(): Option[Hockeyist] = {
+  private def readHockeyist(): Hockeyist = {
     if (readBoolean()) {
-      Some(new Hockeyist(readLong(), readLong(), readInt(), readDouble(),
+      new Hockeyist(readLong(), readLong(), readInt(), readDouble(),
         readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(), readDouble(),
         readBoolean(), readEnum(hockeyistTypeFromByte), readInt(), readInt(), readInt(), readInt(),
         readDouble(), readEnum(hockeyistStateFromByte), readInt(), readInt(), readInt(), readInt(),
-        readEnum(actionTypeFromByte), if (readBoolean()) Some(readInt()) else None))
-    } else {
-      None
-    }
+        readEnum(actionTypeFromByte), if (readBoolean()) Some(readInt()) else None)
+    } else { Hockeyist.empty }
   }
 
   private def longToId(v: Long): Option[Long] = if (-1 == v) None else Some(v)

@@ -1,5 +1,5 @@
 package model
 
-final class PlayerContext(val hockeyists: Vector[Option[Hockeyist]],
+final class PlayerContext(val hockeyists: Vector[Hockeyist],
                           val world: World)
 

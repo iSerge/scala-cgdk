@@ -18,7 +18,7 @@ class World(val tick: Int,
             val width: Double,
             val height: Double,
             val players: Vector[Option[Player]],
-            val hockeyists: Vector[Option[Hockeyist]],
+            val hockeyists: Vector[Hockeyist],
             val puck: Puck) {
 
   /**
