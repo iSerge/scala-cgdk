@@ -208,15 +208,15 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
 
     @tailrec
-    def rb(offset: Int = 0, bytes: Array[Byte] = new Array[Byte](byteCount)): Array[Byte] = {
+    def rb(offset: Int, bytes: Array[Byte]): Array[Byte] = {
       if (offset < byteCount) {
         val readByteCount = inputStream.read(bytes, offset, byteCount - offset)
         if (readByteCount != -1) {
-          rb(offset + readByteCount)
+          rb(offset + readByteCount, bytes)
         } else { result(bytes, offset) }
       } else { result(bytes, offset) }
     }
-    rb()
+    rb(0, new Array[Byte](byteCount))
   }
 
   private def writeBytes(bytes: Array[Byte]): Unit = {
