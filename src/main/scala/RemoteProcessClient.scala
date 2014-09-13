@@ -56,12 +56,12 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     } else { Game.empty }
   }
 
-  def readPlayerContext(): Option[PlayerContext] = {
+  def readPlayerContext(): PlayerContext = {
     readEnum(messageTypeFromByte) match {
-      case MessageType.GameOver => None
+      case MessageType.GameOver => PlayerContext.empty
       case MessageType.PlayerContext =>
-        if (readBoolean()) { Some(new PlayerContext(readHockeyists(), readWorld())) }
-        else { None }
+        if (readBoolean()) { new PlayerContext(readHockeyists(), readWorld()) }
+        else { PlayerContext.empty }
       case msgType: Any => throw new IllegalArgumentException(s"Received wrong message: $msgType.")
     }
   }
