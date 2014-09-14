@@ -24,7 +24,7 @@ fi
 rm -rf classes
 mkdir classes
 
-scalac -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" > compilation.log
+scalac -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" >compilation.log 2>&1
 
 if [ ! -f classes/MyStrategy.class ]
 then
@@ -38,4 +38,8 @@ then
     exit 1
 fi
 
-jar cf "./scala-cgdk.jar" -C "./classes" .
+echo Manifest-Version: 1.0 >MANIFEST.MF
+echo Main-Class: Runner >>MANIFEST.MF
+echo Class-Path: scala-library.jar scala-reflect.jar >>MANIFEST.MF
+
+jar -cfm "./scala-cgdk.jar" MANIFEST.MF -C "./classes" . >>compilation.log 2>&1
