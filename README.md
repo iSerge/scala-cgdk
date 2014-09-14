@@ -78,7 +78,7 @@ class MyStrategy extends Strategy {
   }
 
   private def drivePuck(self: Hockeyist, world: World, game: Game, move: Move) {
-    val Some((netX, netY)) = for {
+    val (netX, netY) = for {
       opponentPlayer <- world.opponentPlayer
       netX = 0.5D * (opponentPlayer.netBack + opponentPlayer.netFront)
       netY = {
