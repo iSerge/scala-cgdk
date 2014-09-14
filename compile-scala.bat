@@ -19,7 +19,7 @@ if not exist src\main\scala\MyStrategy.scala (
 rd /Q /S classes
 md classes
 
-call scalac -encoding UTF-8 -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" > compilation.log
+call "%SCALA_HOME%\bin\scalac" -encoding UTF-8 -sourcepath "src/main/scala" -d classes "src/main/scala/Runner.scala" > compilation.log
 
 if not exist classes\Runner.class (
     echo Unable to find classes\Runner.class >> compilation.log
@@ -31,4 +31,8 @@ if not exist classes\MyStrategy.class (
     exit 1
 )
 
-jar cvfe "./scala-cgdk.jar" Runner -C "./classes" .
+echo Manifest-Version: 1.0> MANIFEST.MF
+echo Main-Class: Runner>> MANIFEST.MF
+echo Class-Path: scala-library.jar>> MANIFEST.MF
+
+jar -cvfm "./scala-cgdk.jar" MANIFEST.MF -C "./classes" .
