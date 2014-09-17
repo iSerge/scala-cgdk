@@ -16,7 +16,7 @@ package model
  * @param angularSpeed Возвращает скорость вращения объекта.
  *                     Положительные значения соответствуют вращению по часовой стрелке.
  * @param teammate Возвращает `true`, если и только если данный хоккеист входит в команду вашего игрока.
- * @param hokeyistType Возвращает тип хоккеиста.
+ * @param hockeyistType Возвращает тип хоккеиста.
  * @param strength Возвращает значение атрибута сила.
  * @param endurance Возвращает значение атрибута стойкость.
  * @param dexterity Возвращает значение атрибута ловкость.
@@ -51,7 +51,7 @@ class Hockeyist(id: Long,
                 angle: Double,
                 angularSpeed: Double,
                 val teammate: Boolean,
-                val hokeyistType: HockeyistType,
+                val hockeyistType: HockeyistType,
                 val strength: Int,
                 val endurance: Int,
                 val dexterity: Int,
