@@ -67,7 +67,7 @@ final class RemoteProcessClient(host: String, port: Int) extends Closeable {
     }
   }
 
-  def writeMoves(moves: List[Move]): Unit = {
+  def writeMoves(moves: Vector[Move]): Unit = {
     writeByte(messageTypeToInt(MessageType.Moves))
 
     if (moves.isEmpty) {
